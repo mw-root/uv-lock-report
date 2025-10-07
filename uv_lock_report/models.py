@@ -1,5 +1,5 @@
 import re
-from typing import Optional, Tuple
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, computed_field, field_serializer
 from semver import Version
@@ -10,7 +10,7 @@ BASEVERSION = re.compile(
         (\.
         (?P<minor>0|[1-9]\d*)
         (\.
-            (?P<patch>0|[1-9]\d*)
+        (?P<patch>0|[1-9]\d*)
         )?
         )?
     """,
@@ -18,7 +18,7 @@ BASEVERSION = re.compile(
 )
 
 
-def coerce(version: str) -> Tuple[Version, Optional[str]]:
+def coerce(version: str) -> tuple[Version | None, Optional[str]]:
     """
     Convert an incomplete version string into a semver-compatible Version
     object
@@ -40,7 +40,7 @@ def coerce(version: str) -> Tuple[Version, Optional[str]]:
     ver = {
         key: 0 if value is None else value for key, value in match.groupdict().items()
     }
-    ver = Version(**ver)
+    ver = Version(**ver)  # ty: ignore[missing-argument]
     rest = match.string[match.end() :]  # noqa:E203
     return ver, rest
 
@@ -66,9 +66,15 @@ class LockfilePackage(BaseModel):
                 version=Version.parse(d["version"], optional_minor_and_patch=True),
             )
         except ValueError:
-            version, _ = coerce(d["version"])
+            version, rest = coerce(d["version"])
 
             if version is not None:
+                if rest is not None:
+                    return cls(
+                        name=d["name"],
+                        version=f"{str(version)}{rest}",
+                    )
+
                 return cls(
                     name=d["name"],
                     version=version,
@@ -84,8 +90,8 @@ class UpdatedPackage(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
-    old_version: Version
-    new_version: Version
+    old_version: Version | str
+    new_version: Version | str
 
     def __str__(self) -> str:
         return f"{self.name}: {self.old_version} -> {self.new_version}"
@@ -147,7 +153,7 @@ class LockfileChanges(BaseModel):
             )
             all.extend(
                 [
-                    f"| {updated.name} | {updated.old_version} | {updated.new_version} | "
+                    f"| {updated.name} | {updated.old_version} | {updated.new_version} |"
                     for updated in self.updated
                 ]
             )

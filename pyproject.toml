@@ -4,10 +4,12 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "pydantic>=2.11.9",
-    "semver>=3.0.4",
-]
+dependencies = ["pydantic>=2.11.9", "semver>=3.0.4"]
 
+[tool.setuptools.packages.find]
+where = ["uv_lock_report"]
 
 [tool.ruff]
+
+[dependency-groups]
+test = ["pytest>=8.4.2", "pytest-cov>=7.0.0"]
