@@ -1,0 +1,27 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended",
+        "docker:pinDigests",
+        "helpers:pinGitHubActionDigests",
+        ":configMigration",
+        ":pinDevDependencies"
+    ],
+    "vulnerabilityAlerts": {
+        "groupName": null,
+        "schedule": [],
+        "dependencyDashboardApproval": false,
+        "minimumReleaseAge": null,
+        "rangeStrategy": "update-lockfile",
+        "commitMessageSuffix": "[SECURITY]",
+        "branchTopic": "{{{datasource}}}-{{{depNameSanitized}}}-vulnerability",
+        "prCreation": "immediate",
+        "vulnerabilityFixStrategy": "lowest"
+    },
+    "lockFileMaintenance": {
+        "enabled": true
+    },
+    "pre-commit": {
+        "enabled": true
+    }
+}

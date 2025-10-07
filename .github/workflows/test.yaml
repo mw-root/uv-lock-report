@@ -1,14 +1,33 @@
+name: Tests
 
-name: Report uv.lock Changes
+on: [pull_request]
 
-on:
-  pull_request:
+permissions:
+  contents: read
 
 jobs:
-  report:
+  Test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-      - name: Report
-        uses: mw-root/uv-lock-report@initial
+      - name: Install uv
+        uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+
+      - name: Install dependencies with uv
+        run: uv sync --group test
+
+      - name: Pytest
+        run: uv run pytest --cov=./ --cov-report=xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@5a1091511ad55cbe89839c7260b706298ca349f7 # v5.5.1
+        with:
+          directory: .
+          env_vars: OS,PYTHON
+          fail_ci_if_error: true
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true

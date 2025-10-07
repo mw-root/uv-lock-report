@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "uv_lock_report"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
