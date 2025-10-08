@@ -1,4 +1,7 @@
 ## uv Lock Report
+
+[![codecov](https://codecov.io/gh/mw-root/uv-lock-report/graph/badge.svg?token=QQFK62PQ8G)](https://codecov.io/gh/mw-root/uv-lock-report)
+
 ## Description
 
 <!-- AUTO-DOC-DESCRIPTION:START - Do not remove or modify this section -->
