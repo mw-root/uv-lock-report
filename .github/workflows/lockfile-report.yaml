@@ -1,0 +1,21 @@
+name: uv Lock Report
+
+on:
+    pull_request:
+
+permissions:
+    contents: read
+    pull-requests: write
+
+jobs:
+    report:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+              with:
+                  fetch-depth: 0
+
+            - name: Report
+              uses: mw-root/uv-lock-report@239de2ecc970fd512714f82c9dd2bcf75891782e # v.0.1.0
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
