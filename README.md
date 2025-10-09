@@ -6,9 +6,7 @@
 
 <!-- AUTO-DOC-DESCRIPTION:START - Do not remove or modify this section -->
 
-Parses any changes to uv.lock in a Pull Request and
-creates a PR comment with details of any new, removed, or
-updated packages
+Parses uv.lock changes and creates a report in a Pull Request Comments
 
 <!-- AUTO-DOC-DESCRIPTION:END -->
 
