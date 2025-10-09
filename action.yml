@@ -1,4 +1,7 @@
 name: Report uv.lock Changes
+branding:
+  icon: arrow-up-right
+  color: green
 description: |-
   Parses uv.lock changes and creates a report in a Pull Request Comments
 inputs:
