@@ -1,8 +1,6 @@
 name: Report uv.lock Changes
 description: |-
-  Parses any changes to uv.lock in a Pull Request and
-  creates a PR comment with details of any new, removed, or
-  updated packages
+  Parses uv.lock changes and creates a report in a Pull Request Comments
 inputs:
   github-token:
     description: GitHub Token
