@@ -2,8 +2,6 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "extends": [
         "config:recommended",
-        "docker:pinDigests",
-        "helpers:pinGitHubActionDigests",
         ":configMigration",
         ":pinDevDependencies"
     ],
@@ -23,5 +21,20 @@
     },
     "pre-commit": {
         "enabled": true
-    }
+    },
+    "packageRules": [
+        {
+            "matchManagers": [
+                "github-actions"
+            ],
+            "matchUpdateTypes": [
+                "minor",
+                "patch",
+                "pin",
+                "digest"
+            ],
+            "automerge": true,
+            "groupName": "Minor / Patch GitHub Actions"
+        }
+    ]
 }

@@ -12,6 +12,8 @@ updated packages
 
 <!-- AUTO-DOC-DESCRIPTION:END -->
 
+![Example Comment](images/uv-lock-report-comment.png "Example Comment")
+
 
 ## Example
 ```yaml
