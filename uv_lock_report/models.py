@@ -263,15 +263,6 @@ class LockFileReporter:
             self.new_lockfile.package_names
         )
 
-    # def exists_in_old_lockfile(self, package: LockfilePackage) -> bool:
-    #     return package.name in self.old_lockfile.package_names
-
-    # def exists_in_new_lockfile(self, package: LockfilePackage) -> bool:
-    #     return package.name in self.new_lockfile.package_names
-
-    # def exists_in_both_lockfiles(self, package: LockfilePackage) -> bool:
-    #     return package.name in self.both_lockfile_package_names
-
     def get_removed_packages(self) -> list[LockfilePackage]:
         if self.old_lockfile is None:
             return []
