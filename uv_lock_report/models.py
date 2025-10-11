@@ -52,7 +52,7 @@ class LockfilePackage(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
-    version: Version | str
+    version: Version | str | None
 
     def __str__(self) -> str:
         return f"{self.name}: {self.version}"
