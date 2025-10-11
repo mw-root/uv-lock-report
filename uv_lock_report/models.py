@@ -1,7 +1,10 @@
 import re
+import tomllib
+from enum import StrEnum, auto
+from functools import cached_property
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, computed_field, field_serializer
+from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
 from semver import Version
 
 BASEVERSION = re.compile(
@@ -84,6 +87,11 @@ class LockfilePackage(BaseModel):
             name=d["name"],
             version=d["version"],
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, LockfilePackage):
+            return NotImplemented
+        return self.name == other.name and self.version == other.version
 
 
 class UpdatedPackage(BaseModel):
@@ -170,3 +178,132 @@ class LockfileChanges(BaseModel):
             [f"| {removed.name} | {removed.version} |" for removed in self.removed]
         )
         return "\n".join(all)
+
+
+class LockFileType(StrEnum):
+    UV = auto()
+
+
+class LockFile(BaseModel):
+    type: LockFileType
+    packages: list[LockfilePackage]
+
+    @cached_property
+    def packages_by_name(self) -> dict[str, LockfilePackage]:
+        return {p.name: p for p in self.packages}
+
+    @cached_property
+    def package_names(self) -> set[str]:
+        return set(self.packages_by_name.keys())
+
+
+class UvLockFile(LockFile):
+    type: LockFileType = LockFileType.UV
+    version: int
+    revision: int
+    packages: list[LockfilePackage] = Field(alias="package")
+    requires_python: str = Field(alias="requires-python")
+
+    @classmethod
+    def from_toml_str(cls, toml_str: str) -> "UvLockFile":
+        return cls.model_validate(tomllib.loads(toml_str))
+
+
+class LockFileReporter:
+    def __init__(
+        self, old_lockfile: LockFile | None, new_lockfile: LockFile | None
+    ) -> None:
+        self.old_lockfile = old_lockfile
+        self.new_lockfile = new_lockfile
+
+    @cached_property
+    def both_lockfile_package_names(self) -> set[str]:
+        old_package_names = (
+            self.old_lockfile.package_names if self.old_lockfile else set()
+        )
+        new_package_names = (
+            self.new_lockfile.package_names if self.new_lockfile else set()
+        )
+
+        return old_package_names & new_package_names
+
+    def get_changes(self) -> LockfileChanges:
+        return LockfileChanges(
+            added=self.get_added_packages(),
+            removed=self.get_removed_packages(),
+            updated=self.get_updated_packages(),
+        )
+
+    @cached_property
+    def added_package_names(self) -> set[str]:
+        if self.old_lockfile is None:
+            if self.new_lockfile is None:
+                return set()
+
+            return self.new_lockfile.package_names
+
+        if self.new_lockfile is None:
+            return set()
+
+        return self.new_lockfile.package_names.difference(
+            self.old_lockfile.package_names
+        )
+
+    @cached_property
+    def removed_package_names(self) -> set[str]:
+        if self.new_lockfile is None:
+            if self.old_lockfile is None:
+                return set()
+
+            return self.old_lockfile.package_names
+        if self.old_lockfile is None:
+            return set()
+
+        return self.old_lockfile.package_names.difference(
+            self.new_lockfile.package_names
+        )
+
+    # def exists_in_old_lockfile(self, package: LockfilePackage) -> bool:
+    #     return package.name in self.old_lockfile.package_names
+
+    # def exists_in_new_lockfile(self, package: LockfilePackage) -> bool:
+    #     return package.name in self.new_lockfile.package_names
+
+    # def exists_in_both_lockfiles(self, package: LockfilePackage) -> bool:
+    #     return package.name in self.both_lockfile_package_names
+
+    def get_removed_packages(self) -> list[LockfilePackage]:
+        if self.old_lockfile is None:
+            return []
+        return [
+            pkg
+            for pkg in self.old_lockfile.packages
+            if pkg.name in self.removed_package_names
+        ]
+
+    def get_added_packages(self) -> list[LockfilePackage]:
+        if self.new_lockfile is None:
+            return []
+        return [
+            pkg
+            for pkg in self.new_lockfile.packages
+            if pkg.name in self.added_package_names
+        ]
+
+    def get_updated_packages(self) -> list[UpdatedPackage]:
+        if self.old_lockfile is None or self.new_lockfile is None:
+            return []
+        updated_packages: list[UpdatedPackage] = []
+
+        for pkg_name in self.both_lockfile_package_names:
+            old_pkg = self.old_lockfile.packages_by_name[pkg_name]
+            new_pkg = self.new_lockfile.packages_by_name[pkg_name]
+            if old_pkg != new_pkg:
+                updated_packages.append(
+                    UpdatedPackage(
+                        name=pkg_name,
+                        old_version=old_pkg.version,
+                        new_version=new_pkg.version,
+                    )
+                )
+        return updated_packages
