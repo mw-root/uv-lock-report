@@ -2,9 +2,10 @@ from semver import Version
 
 from uv_lock_report.models import (
     LockFile,
-    LockFileReporter,
     LockfilePackage,
+    LockFileReporter,
     LockFileType,
+    OutputFormat,
 )
 
 
@@ -13,7 +14,9 @@ class TestLockFileReporter:
 
     def test_both_lockfiles_none(self):
         """Test when both old and new lockfiles are None."""
-        reporter = LockFileReporter(old_lockfile=None, new_lockfile=None)
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
 
         assert reporter.added_package_names == set()
         assert reporter.removed_package_names == set()
@@ -35,7 +38,11 @@ class TestLockFileReporter:
             type=LockFileType.UV,
             packages=new_packages,
         )
-        reporter = LockFileReporter(old_lockfile=None, new_lockfile=new_lockfile)
+        reporter = LockFileReporter(
+            old_lockfile=None,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
+        )
 
         assert reporter.added_package_names == {"pkg1", "pkg2"}
         assert reporter.removed_package_names == set()
@@ -57,7 +64,11 @@ class TestLockFileReporter:
             type=LockFileType.UV,
             packages=old_packages,
         )
-        reporter = LockFileReporter(old_lockfile=old_lockfile, new_lockfile=None)
+        reporter = LockFileReporter(
+            old_lockfile=old_lockfile,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+        )
 
         assert reporter.added_package_names == set()
         assert reporter.removed_package_names == {"pkg1", "pkg2"}
@@ -79,7 +90,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         assert reporter.added_package_names == set()
@@ -106,7 +119,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         assert reporter.added_package_names == {"pkg2", "pkg3"}
@@ -134,7 +149,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         assert reporter.added_package_names == set()
@@ -162,7 +179,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         assert reporter.added_package_names == set()
@@ -200,7 +219,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         assert reporter.added_package_names == {"pkg4"}
@@ -233,7 +254,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         changes = reporter.get_changes()
@@ -254,7 +277,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         changes = reporter.get_changes()
@@ -273,7 +298,9 @@ class TestLockFileReporter:
         new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
 
         reporter = LockFileReporter(
-            old_lockfile=old_lockfile, new_lockfile=new_lockfile
+            old_lockfile=old_lockfile,
+            new_lockfile=new_lockfile,
+            output_format=OutputFormat.TABLE,
         )
 
         # Access cached properties multiple times

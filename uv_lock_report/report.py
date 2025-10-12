@@ -4,6 +4,7 @@ from pathlib import Path
 from uv_lock_report.models import (
     LockfileChanges,
     LockFileReporter,
+    OutputFormat,
     UvLockFile,
 )
 
@@ -44,10 +45,19 @@ def write_changes_file(lockfile_changes: LockfileChanges, output_path: str) -> N
     Path(output_path).write_text(lockfile_changes.model_dump_json())
 
 
-def report(base_sha: str, base_path: str, output_path: str) -> None:
+def report(
+    base_sha: str,
+    base_path: str,
+    output_path: str,
+    output_format: OutputFormat = OutputFormat.TABLE,
+) -> None:
     old_lockfile = get_old_uv_lock_file(base_sha, base_path)
     new_lockfile = get_new_uv_lock_file(base_path)
 
-    reporter = LockFileReporter(old_lockfile=old_lockfile, new_lockfile=new_lockfile)
+    reporter = LockFileReporter(
+        old_lockfile=old_lockfile,
+        new_lockfile=new_lockfile,
+        output_format=output_format,
+    )
 
     write_changes_file(lockfile_changes=reporter.get_changes(), output_path=output_path)
