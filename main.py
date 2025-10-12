@@ -10,7 +10,7 @@ def parse_args() -> Namespace:
     parser.add_argument("--base-path", required=True)
     parser.add_argument("--output-path", required=True)
     parser.add_argument(
-        "--format",
+        "--output-format",
         choices=list(OutputFormat),
         default=OutputFormat.TABLE.value,
         required=False,
@@ -24,8 +24,8 @@ def main():
     base_sha = args.base_sha
     base_path = args.base_path
     output_path = args.output_path
-    format = OutputFormat(args.format)
-    report(base_sha, base_path, output_path, output_format=format)
+    output_format = OutputFormat(args.output_format)
+    report(base_sha, base_path, output_path, output_format=output_format)
 
 
 if __name__ == "__main__":
