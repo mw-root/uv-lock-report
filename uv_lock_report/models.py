@@ -204,12 +204,14 @@ class LockfileChanges(BaseModel):
         all = ["# uv Lockfile Report"]
         if self.added:
             all.append("## Added Packages")
-            all.extend([f"`{added.name}`: `{added.version}`" for added in self.added])
+            all.extend(
+                [f"\\`{added.name}\\`: \\`{added.version}\\`" for added in self.added]
+            )
         if self.updated:
             all.append("## Changed Packages")
             all.extend(
                 [
-                    f"`{updated.name}`: `{updated.old_version}` -> `{updated.new_version}`"
+                    f"\\`{updated.name}\\`: \\`{updated.old_version}\\` -> \\`{updated.new_version}\\`"
                     for updated in self.updated
                 ]
             )
@@ -217,7 +219,10 @@ class LockfileChanges(BaseModel):
         if self.removed:
             all.append("## Removed Packages")
             all.extend(
-                [f"`{removed.name}`: `{removed.version}`" for removed in self.removed]
+                [
+                    f"\\`{removed.name}\\`: \\`{removed.version}\\`"
+                    for removed in self.removed
+                ]
             )
         return "\n".join(all)
 
