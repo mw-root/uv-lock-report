@@ -41,14 +41,14 @@ EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
 EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE = """
 # uv Lockfile Report
 ## Added Packages
-`added_1`: `1.0.0`
-`added_2`: `4.2.0`
+\\`added_1\\`: \\`1.0.0\\`
+\\`added_2\\`: \\`4.2.0\\`
 ## Changed Packages
-`updated_1`: `1.0.0` -> `2.0.0`
-`updated_2`: `1.0.0` -> `2.0.0`
+\\`updated_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
+\\`updated_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
 ## Removed Packages
-`removed_1`: `1.0.0`
-`removed_2`: `4.2.0`
+\\`removed_1\\`: \\`1.0.0\\`
+\\`removed_2\\`: \\`4.2.0\\`
 """.strip()
 
 
