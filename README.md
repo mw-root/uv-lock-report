@@ -10,6 +10,12 @@ Parses uv.lock changes and creates a report in a Pull Request Comments
 
 <!-- AUTO-DOC-DESCRIPTION:END -->
 
+Pull Requests with lockfile changes can be difficult to evaluate at a quick glance
+and diffs are usually hidden by default.
+
+This action provides a simple solution by determining the changes
+and posting a comment with the summary.
+
 ![Example Comment](images/uv-lock-report-comment.png "Example Comment")
 
 
@@ -40,8 +46,9 @@ jobs:
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
 
-|    INPUT     |  TYPE  | REQUIRED | DEFAULT | DESCRIPTION  |
-|--------------|--------|----------|---------|--------------|
-| github-token | string |   true   |         | GitHub Token |
+|     INPUT     |  TYPE  | REQUIRED |  DEFAULT  |                         DESCRIPTION                         |
+|---------------|--------|----------|-----------|-------------------------------------------------------------|
+| github-token  | string |   true   |           |                        GitHub Token                         |
+| output-format | string |  false   | `"table"` | The output format of the report. <br>One of: simple, table  |
 
 <!-- AUTO-DOC-INPUT:END -->

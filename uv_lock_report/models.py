@@ -7,6 +7,12 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
 from semver import Version
 
+
+class OutputFormat(StrEnum):
+    TABLE = auto()
+    SIMPLE = auto()
+
+
 BASEVERSION = re.compile(
     r"""[vV]?
         (?P<major>0|[1-9]\d*)
@@ -119,6 +125,7 @@ class LockfileChanges(BaseModel):
     added: list[LockfilePackage] = []
     removed: list[LockfilePackage] = []
     updated: list[UpdatedPackage] = []
+    output_format: OutputFormat
 
     def __str__(self) -> str:
         all = []
@@ -141,6 +148,17 @@ class LockfileChanges(BaseModel):
     @computed_field
     @property
     def markdown(self) -> str:
+        match self.output_format:
+            case OutputFormat.TABLE:
+                return self.markdown_table
+            case OutputFormat.SIMPLE:
+                return self.markdown_simple
+            case _:
+                raise ValueError(f"Unknown format: {format}")
+
+    @computed_field
+    @property
+    def markdown_table(self) -> str:
         all = ["# uv Lockfile Report"]
         if self.added:
             all.append("## Added Packages")
@@ -150,7 +168,8 @@ class LockfileChanges(BaseModel):
                     "|--|--|",
                 ]
             )
-        all.extend([f"| {added.name} | {added.version} |" for added in self.added])
+            all.extend([f"| {added.name} | {added.version} |" for added in self.added])
+
         if self.updated:
             all.append("## Changed Packages")
             all.extend(
@@ -174,9 +193,32 @@ class LockfileChanges(BaseModel):
                     "|--|--|",
                 ]
             )
-        all.extend(
-            [f"| {removed.name} | {removed.version} |" for removed in self.removed]
-        )
+            all.extend(
+                [f"| {removed.name} | {removed.version} |" for removed in self.removed]
+            )
+        return "\n".join(all)
+
+    @computed_field
+    @property
+    def markdown_simple(self) -> str:
+        all = ["# uv Lockfile Report"]
+        if self.added:
+            all.append("## Added Packages")
+            all.extend([f"`{added.name}`: `{added.version}`" for added in self.added])
+        if self.updated:
+            all.append("## Changed Packages")
+            all.extend(
+                [
+                    f"`{updated.name}`: `{updated.old_version}` -> `{updated.new_version}`"
+                    for updated in self.updated
+                ]
+            )
+
+        if self.removed:
+            all.append("## Removed Packages")
+            all.extend(
+                [f"`{removed.name}`: `{removed.version}`" for removed in self.removed]
+            )
         return "\n".join(all)
 
 
@@ -211,10 +253,14 @@ class UvLockFile(LockFile):
 
 class LockFileReporter:
     def __init__(
-        self, old_lockfile: LockFile | None, new_lockfile: LockFile | None
+        self,
+        old_lockfile: LockFile | None,
+        new_lockfile: LockFile | None,
+        output_format: OutputFormat,
     ) -> None:
         self.old_lockfile = old_lockfile
         self.new_lockfile = new_lockfile
+        self.output_format = output_format
 
     @cached_property
     def both_lockfile_package_names(self) -> set[str]:
@@ -232,6 +278,7 @@ class LockFileReporter:
             added=self.get_added_packages(),
             removed=self.get_removed_packages(),
             updated=self.get_updated_packages(),
+            output_format=self.output_format,
         )
 
     @cached_property
