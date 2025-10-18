@@ -20,19 +20,7 @@ It analyzes the changes between your base and head lockfiles, then posts a forma
 No more parsing through hundreds of lines of TOML diffs to understand what changed.
 
 
-### Examples
-
-The formatting can be chosen with the `output-format` input.
-
-#### Simple Format ( Default )
-![Example Comment](images/uv-lock-report-simple-comment.png "Simple Format")
-
-
-#### Table Format
-![Example Comment](images/uv-lock-report-table-comment.png "Table Format")
-
-
-## Example
+## Example Usage
 ```yaml
 on:
   pull_request:
@@ -65,3 +53,16 @@ jobs:
 | output-format | string |  false   | `"simple"` | The output format of the report. <br>One of: simple, table  |
 
 <!-- AUTO-DOC-INPUT:END -->
+
+
+
+### Output Format Examples
+
+The formatting can be chosen with the `output-format` input.
+
+#### Simple Format ( Default )
+![Example Comment](images/uv-lock-report-simple-comment.png "Simple Format")
+
+
+#### Table Format
+![Example Comment](images/uv-lock-report-table-comment.png "Table Format")
