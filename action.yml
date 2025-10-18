@@ -3,8 +3,8 @@ branding:
   icon: arrow-up-right
   color: green
 description: |-
-  Digests complex `uv.lock` diffs in Pull Requests and provides a simple,
-  readable summary of dependency changes as a PR comment.
+  Digests complex `uv.lock` diffs in Pull Requests and provides a
+  simple summary of dependency changes as a PR comment.
 inputs:
   github-token:
     description: GitHub Token
