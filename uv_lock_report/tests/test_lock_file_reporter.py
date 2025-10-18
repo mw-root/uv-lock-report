@@ -353,37 +353,41 @@ class TestLockFileReporter:
         assert sorted_packages[3].name == "string-pkg"  # UNKNOWN = -1
 
     def test_sort_packages_by_change_level_same_level(self):
-        """Test sorting when multiple packages have the same change level."""
+        """Test sorting when multiple packages have the same change level - should be alphabetical by name."""
         reporter = LockFileReporter(
             old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
         )
 
-        # Create multiple packages with same change level
-        major_update_1 = UpdatedPackage(
-            name="alpha-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+        # Create multiple packages with same change level but different names
+        major_update_zebra = UpdatedPackage(
+            name="zebra-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
         )
-        major_update_2 = UpdatedPackage(
-            name="beta-pkg", old_version=Version(1, 5, 3), new_version=Version(3, 0, 0)
+        major_update_alpha = UpdatedPackage(
+            name="alpha-pkg", old_version=Version(1, 5, 3), new_version=Version(3, 0, 0)
+        )
+        major_update_beta = UpdatedPackage(
+            name="beta-pkg", old_version=Version(2, 0, 0), new_version=Version(5, 0, 0)
         )
         minor_update = UpdatedPackage(
             name="minor-pkg", old_version=Version(2, 1, 0), new_version=Version(2, 2, 0)
         )
 
-        packages = [minor_update, major_update_1, major_update_2]
+        # Pass in non-alphabetical order
+        packages = [
+            major_update_zebra,
+            minor_update,
+            major_update_beta,
+            major_update_alpha,
+        ]
 
         sorted_packages = reporter.sort_packages_by_change_level(packages)
 
-        # Both major updates should come before minor update
-        assert len(sorted_packages) == 3
-        assert sorted_packages[0].name in [
-            "alpha-pkg",
-            "beta-pkg",
-        ]  # Either major update
-        assert sorted_packages[1].name in [
-            "alpha-pkg",
-            "beta-pkg",
-        ]  # The other major update
-        assert sorted_packages[2].name == "minor-pkg"  # Minor update last
+        # All major updates should come before minor update, and be sorted alphabetically
+        assert len(sorted_packages) == 4
+        assert sorted_packages[0].name == "alpha-pkg"  # MAJOR, alphabetically first
+        assert sorted_packages[1].name == "beta-pkg"  # MAJOR, alphabetically second
+        assert sorted_packages[2].name == "zebra-pkg"  # MAJOR, alphabetically third
+        assert sorted_packages[3].name == "minor-pkg"  # MINOR, comes after all major
 
     def test_sort_packages_by_change_level_empty_list(self):
         """Test sorting an empty list of packages."""
@@ -396,7 +400,7 @@ class TestLockFileReporter:
         assert sorted_packages == []
 
     def test_sort_packages_by_change_level_verifies_change_levels(self):
-        """Test that the sorted packages actually have the correct change levels in descending order."""
+        """Test that the sorted packages have the correct change levels and names in correct order."""
         reporter = LockFileReporter(
             old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
         )
@@ -419,8 +423,79 @@ class TestLockFileReporter:
 
         sorted_packages = reporter.sort_packages_by_change_level(packages)
 
-        # Verify the change levels are in descending order
-        assert sorted_packages[0].change_level() == VersionChangeLevel.MAJOR  # 2
+        # Verify the change levels are in correct order (MAJOR=0, MINOR=1, PATCH=2, UNKNOWN=10)
+        assert sorted_packages[0].change_level() == VersionChangeLevel.MAJOR  # 0
         assert sorted_packages[1].change_level() == VersionChangeLevel.MINOR  # 1
-        assert sorted_packages[2].change_level() == VersionChangeLevel.PATCH  # 0
-        assert sorted_packages[3].change_level() == VersionChangeLevel.UNKNOWN  # -1
+        assert sorted_packages[2].change_level() == VersionChangeLevel.PATCH  # 2
+        assert sorted_packages[3].change_level() == VersionChangeLevel.UNKNOWN  # 10
+
+    def test_sort_packages_by_change_level_alphabetical_within_levels(self):
+        """Test comprehensive sorting: by change level first, then alphabetically by name."""
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
+
+        # Create multiple packages at each change level with non-alphabetical names
+        packages = [
+            # PATCH updates
+            UpdatedPackage(
+                name="zulu-patch",
+                old_version=Version(1, 0, 0),
+                new_version=Version(1, 0, 1),
+            ),
+            UpdatedPackage(
+                name="alpha-patch",
+                old_version=Version(1, 0, 0),
+                new_version=Version(1, 0, 2),
+            ),
+            # MINOR updates
+            UpdatedPackage(
+                name="yankee-minor",
+                old_version=Version(1, 0, 0),
+                new_version=Version(1, 1, 0),
+            ),
+            UpdatedPackage(
+                name="bravo-minor",
+                old_version=Version(1, 0, 0),
+                new_version=Version(1, 2, 0),
+            ),
+            # MAJOR updates
+            UpdatedPackage(
+                name="whiskey-major",
+                old_version=Version(1, 0, 0),
+                new_version=Version(2, 0, 0),
+            ),
+            UpdatedPackage(
+                name="charlie-major",
+                old_version=Version(1, 0, 0),
+                new_version=Version(3, 0, 0),
+            ),
+            # UNKNOWN updates
+            UpdatedPackage(
+                name="victor-unknown",
+                old_version="1.0.0.post0",
+                new_version="2.0.0.post0",
+            ),
+            UpdatedPackage(
+                name="delta-unknown",
+                old_version="1.0.0.post0",
+                new_version="1.1.0.post0",
+            ),
+        ]
+
+        sorted_packages = reporter.sort_packages_by_change_level(packages)
+
+        # Verify correct order: MAJOR (alphabetical), MINOR (alphabetical), PATCH (alphabetical), UNKNOWN (alphabetical)
+        expected_order = [
+            "charlie-major",  # MAJOR, alphabetically first
+            "whiskey-major",  # MAJOR, alphabetically second
+            "bravo-minor",  # MINOR, alphabetically first
+            "yankee-minor",  # MINOR, alphabetically second
+            "alpha-patch",  # PATCH, alphabetically first
+            "zulu-patch",  # PATCH, alphabetically second
+            "delta-unknown",  # UNKNOWN, alphabetically first
+            "victor-unknown",  # UNKNOWN, alphabetically second
+        ]
+
+        actual_order = [pkg.name for pkg in sorted_packages]
+        assert actual_order == expected_order

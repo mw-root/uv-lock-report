@@ -14,10 +14,10 @@ class OutputFormat(StrEnum):
 
 
 class VersionChangeLevel(IntEnum):
-    MAJOR = 2
+    MAJOR = 0
     MINOR = 1
-    PATCH = 0
-    UNKNOWN = -1
+    PATCH = 2
+    UNKNOWN = 10
 
 
 BASEVERSION = re.compile(
@@ -360,7 +360,7 @@ class LockFileReporter:
     def sort_packages_by_change_level(
         self, packages: list[UpdatedPackage]
     ) -> list[UpdatedPackage]:
-        return sorted(packages, key=lambda x: x.change_level(), reverse=True)
+        return sorted(packages, key=lambda x: (x.change_level(), x.name))
 
     def get_updated_packages(self) -> list[UpdatedPackage]:
         if self.old_lockfile is None or self.new_lockfile is None:
