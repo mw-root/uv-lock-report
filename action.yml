@@ -3,7 +3,8 @@ branding:
   icon: arrow-up-right
   color: green
 description: |-
-  Parses uv.lock changes and creates a report in a Pull Request Comments
+  Digests complex `uv.lock` diffs in Pull Requests and provides a simple,
+  readable summary of dependency changes as a PR comment.
 inputs:
   github-token:
     description: GitHub Token
@@ -12,7 +13,7 @@ inputs:
     description: >-
       The output format of the report. One of: simple, table
     required: false
-    default: table
+    default: simple
 outputs: {}
 runs:
   using: composite
