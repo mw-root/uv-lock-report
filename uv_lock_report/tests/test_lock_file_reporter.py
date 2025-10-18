@@ -1,12 +1,14 @@
+from typing import Any, cast
+
 from semver import Version
 
 from uv_lock_report.models import (
-    LockFile,
     LockfilePackage,
     LockFileReporter,
     LockFileType,
     OutputFormat,
     UpdatedPackage,
+    UvLockFile,
     VersionChangeLevel,
 )
 
@@ -36,9 +38,11 @@ class TestLockFileReporter:
             LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
             LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
         ]
-        new_lockfile = LockFile(
+        new_lockfile = UvLockFile(
             type=LockFileType.UV,
-            packages=new_packages,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
         )
         reporter = LockFileReporter(
             old_lockfile=None,
@@ -62,9 +66,11 @@ class TestLockFileReporter:
             LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
             LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
         ]
-        old_lockfile = LockFile(
+        old_lockfile = UvLockFile(
             type=LockFileType.UV,
-            packages=old_packages,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
         )
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -88,8 +94,18 @@ class TestLockFileReporter:
             LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
             LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -117,8 +133,18 @@ class TestLockFileReporter:
             LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
             LockfilePackage(name="pkg3", version=Version(3, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -147,8 +173,18 @@ class TestLockFileReporter:
         new_packages = [
             LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -177,8 +213,18 @@ class TestLockFileReporter:
             LockfilePackage(name="pkg1", version=Version(1, 5, 0)),
             LockfilePackage(name="pkg2", version=Version(3, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -217,8 +263,18 @@ class TestLockFileReporter:
         ]
         # pkg2 is removed
 
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -252,8 +308,18 @@ class TestLockFileReporter:
         new_packages = [
             LockfilePackage(name="pkg1", version="2.10.0.post0"),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -275,8 +341,18 @@ class TestLockFileReporter:
             LockfilePackage(name="alpha", version=Version(2, 0, 0)),
             LockfilePackage(name="beta", version=Version(3, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,
@@ -296,8 +372,18 @@ class TestLockFileReporter:
         new_packages = [
             LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
         ]
-        old_lockfile = LockFile(type=LockFileType.UV, packages=old_packages)
-        new_lockfile = LockFile(type=LockFileType.UV, packages=new_packages)
+        old_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": old_packages, "requires-python": ">=3.9"}),
+        )
+        new_lockfile = UvLockFile(
+            type=LockFileType.UV,
+            version=1,
+            revision=1,
+            **cast(Any, {"package": new_packages, "requires-python": ">=3.9"}),
+        )
 
         reporter = LockFileReporter(
             old_lockfile=old_lockfile,

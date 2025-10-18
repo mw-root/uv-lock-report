@@ -66,6 +66,7 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_TABLE = {
         {"name": "removed_1", "version": "1.0.0"},
         {"name": "removed_2", "version": "4.2.0"},
     ],
+    "requires_python": {"new": None, "old": None},
     "updated": [
         {"name": "updated_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "updated_2", "new_version": "2.0.0", "old_version": "1.0.0"},
@@ -87,6 +88,7 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE = {
         {"name": "removed_1", "version": "1.0.0"},
         {"name": "removed_2", "version": "4.2.0"},
     ],
+    "requires_python": {"new": None, "old": None},
     "updated": [
         {"name": "updated_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "updated_2", "new_version": "2.0.0", "old_version": "1.0.0"},

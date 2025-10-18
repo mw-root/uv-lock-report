@@ -1,4 +1,4 @@
-from uv_lock_report.models import LockfileChanges, OutputFormat
+from uv_lock_report.models import LockfileChanges, OutputFormat, RequiresPythonChanges
 
 from .conftest import (
     ADDED_PACKAGES,
@@ -13,11 +13,15 @@ from .conftest import (
 
 class TestLockfileChanges:
     def test_empty_markdown(self):
-        lfc = LockfileChanges(output_format=OutputFormat.TABLE)
+        lfc = LockfileChanges(
+            requires_python=RequiresPythonChanges(old=None, new=None),
+            output_format=OutputFormat.TABLE,
+        )
         assert lfc.markdown == "## uv Lockfile Report"
 
     def test_full_markdown_table(self):
         lfc = LockfileChanges(
+            requires_python=RequiresPythonChanges(old=None, new=None),
             added=ADDED_PACKAGES,
             updated=UPDATED_PACKAGES,
             removed=REMOVED_PACKAGES,
@@ -31,6 +35,7 @@ class TestLockfileChanges:
 
     def test_full_markdown_simple(self):
         lfc = LockfileChanges(
+            requires_python=RequiresPythonChanges(old=None, new=None),
             added=ADDED_PACKAGES,
             updated=UPDATED_PACKAGES,
             removed=REMOVED_PACKAGES,

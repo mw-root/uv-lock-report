@@ -138,8 +138,21 @@ class UpdatedPackage(BaseModel):
         return VersionChangeLevel.UNKNOWN
 
 
+class RequiresPythonChanges(BaseModel):
+    old: str | None
+    new: str | None
+
+    def has_changes(self) -> bool:
+        return self.old != self.new
+
+    def __str__(self) -> str:
+        return f"Requires-Python: {self.old} -> {self.new}"
+
+
 class LockfileChanges(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    requires_python: RequiresPythonChanges
 
     added: list[LockfilePackage] = []
     removed: list[LockfilePackage] = []
@@ -148,6 +161,11 @@ class LockfileChanges(BaseModel):
 
     def __str__(self) -> str:
         all = []
+        if self.requires_python.has_changes():
+            all.append("Python Constraint Changed:")
+            all.append(
+                f"\\`{self.requires_python.old}\\` -> \\`{self.requires_python.new}\\`"
+            )
         if self.added:
             all.append("Added:")
             all.extend([str(e) for e in self.added])
@@ -182,6 +200,11 @@ class LockfileChanges(BaseModel):
         sections = "###"
 
         all = [f"{title} uv Lockfile Report"]
+        if self.requires_python.has_changes():
+            all.append(f"{sections} Python Constraint Changed")
+            all.append(
+                f"\\`{self.requires_python.old}\\` -> \\`{self.requires_python.new}\\`"
+            )
         if self.added:
             all.append(f"{sections} Added Packages")
             all.extend(
@@ -226,6 +249,11 @@ class LockfileChanges(BaseModel):
         title = "##"
         sections = "###"
         all = [f"{title} uv Lockfile Report"]
+        if self.requires_python.has_changes():
+            all.append(f"{sections} Python Constraint Changed")
+            all.append(
+                f"\\`{self.requires_python.old}\\` -> \\`{self.requires_python.new}\\`"
+            )
         if self.added:
             all.append(f"{sections} Added Packages")
             all.extend(
@@ -283,8 +311,8 @@ class UvLockFile(LockFile):
 class LockFileReporter:
     def __init__(
         self,
-        old_lockfile: LockFile | None,
-        new_lockfile: LockFile | None,
+        old_lockfile: UvLockFile | None,
+        new_lockfile: UvLockFile | None,
         output_format: OutputFormat,
     ) -> None:
         self.old_lockfile = old_lockfile
@@ -304,10 +332,23 @@ class LockFileReporter:
 
     def get_changes(self) -> LockfileChanges:
         return LockfileChanges(
+            requires_python=self.get_requires_python_changes(),
             added=self.get_added_packages(),
             removed=self.get_removed_packages(),
             updated=self.get_updated_packages(),
             output_format=self.output_format,
+        )
+
+    def get_requires_python_changes(self) -> RequiresPythonChanges:
+        old_requires_python = (
+            self.old_lockfile.requires_python if self.old_lockfile else None
+        )
+        new_requires_python = (
+            self.new_lockfile.requires_python if self.new_lockfile else None
+        )
+        return RequiresPythonChanges(
+            old=old_requires_python,
+            new=new_requires_python,
         )
 
     @cached_property
