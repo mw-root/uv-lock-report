@@ -12,4 +12,5 @@ where = ["uv_lock_report"]
 [tool.ruff]
 
 [dependency-groups]
+dev = [{ include-group = "test" }]
 test = ["pytest>=8.4.2", "pytest-cov>=7.0.0"]

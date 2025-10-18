@@ -159,9 +159,12 @@ class LockfileChanges(BaseModel):
     @computed_field
     @property
     def markdown_table(self) -> str:
-        all = ["# uv Lockfile Report"]
+        title = "##"
+        sections = "###"
+
+        all = [f"{title} uv Lockfile Report"]
         if self.added:
-            all.append("## Added Packages")
+            all.append(f"{sections} Added Packages")
             all.extend(
                 [
                     "| Package | Version |",
@@ -171,7 +174,7 @@ class LockfileChanges(BaseModel):
             all.extend([f"| {added.name} | {added.version} |" for added in self.added])
 
         if self.updated:
-            all.append("## Changed Packages")
+            all.append(f"{sections} Changed Packages")
             all.extend(
                 [
                     "| Package | Old Version | New Version |",
@@ -186,7 +189,7 @@ class LockfileChanges(BaseModel):
             )
 
         if self.removed:
-            all.append("## Removed Packages")
+            all.append(f"{sections} Removed Packages")
             all.extend(
                 [
                     "| Package | Version |",
@@ -201,14 +204,16 @@ class LockfileChanges(BaseModel):
     @computed_field
     @property
     def markdown_simple(self) -> str:
-        all = ["# uv Lockfile Report"]
+        title = "##"
+        sections = "###"
+        all = [f"{title} uv Lockfile Report"]
         if self.added:
-            all.append("## Added Packages")
+            all.append(f"{sections} Added Packages")
             all.extend(
                 [f"\\`{added.name}\\`: \\`{added.version}\\`" for added in self.added]
             )
         if self.updated:
-            all.append("## Changed Packages")
+            all.append(f"{sections} Changed Packages")
             all.extend(
                 [
                     f"\\`{updated.name}\\`: \\`{updated.old_version}\\` -> \\`{updated.new_version}\\`"
@@ -217,7 +222,7 @@ class LockfileChanges(BaseModel):
             )
 
         if self.removed:
-            all.append("## Removed Packages")
+            all.append(f"{sections} Removed Packages")
             all.extend(
                 [
                     f"\\`{removed.name}\\`: \\`{removed.version}\\`"
