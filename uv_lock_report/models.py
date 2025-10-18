@@ -1,6 +1,6 @@
 import re
 import tomllib
-from enum import StrEnum, auto
+from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from typing import Optional
 
@@ -11,6 +11,13 @@ from semver import Version
 class OutputFormat(StrEnum):
     TABLE = auto()
     SIMPLE = auto()
+
+
+class VersionChangeLevel(IntEnum):
+    MAJOR = 2
+    MINOR = 1
+    PATCH = 0
+    UNKNOWN = -1
 
 
 BASEVERSION = re.compile(
@@ -117,6 +124,18 @@ class UpdatedPackage(BaseModel):
     @field_serializer("new_version", mode="plain")
     def ser_new_version(self, value: Version) -> str:
         return str(value)
+
+    def change_level(self) -> VersionChangeLevel:
+        if isinstance(self.old_version, Version) and isinstance(
+            self.new_version, Version
+        ):
+            if self.new_version.major != self.old_version.major:
+                return VersionChangeLevel.MAJOR
+            elif self.new_version.minor != self.old_version.minor:
+                return VersionChangeLevel.MINOR
+            elif self.new_version.patch != self.old_version.patch:
+                return VersionChangeLevel.PATCH
+        return VersionChangeLevel.UNKNOWN
 
 
 class LockfileChanges(BaseModel):
@@ -338,6 +357,11 @@ class LockFileReporter:
             if pkg.name in self.added_package_names
         ]
 
+    def sort_packages_by_change_level(
+        self, packages: list[UpdatedPackage]
+    ) -> list[UpdatedPackage]:
+        return sorted(packages, key=lambda x: x.change_level(), reverse=True)
+
     def get_updated_packages(self) -> list[UpdatedPackage]:
         if self.old_lockfile is None or self.new_lockfile is None:
             return []
@@ -354,4 +378,4 @@ class LockFileReporter:
                         new_version=new_pkg.version,
                     )
                 )
-        return updated_packages
+        return self.sort_packages_by_change_level(updated_packages)

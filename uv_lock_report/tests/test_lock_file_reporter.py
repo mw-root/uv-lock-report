@@ -6,6 +6,8 @@ from uv_lock_report.models import (
     LockFileReporter,
     LockFileType,
     OutputFormat,
+    UpdatedPackage,
+    VersionChangeLevel,
 )
 
 
@@ -312,3 +314,113 @@ class TestLockFileReporter:
 
         assert reporter.both_lockfile_package_names == set()
         assert reporter.both_lockfile_package_names == set()  # Should use cached value
+
+    def test_sort_packages_by_change_level(self):
+        """Test that sort_packages_by_change_level returns packages sorted by change level (major first, then minor, then patch)."""
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
+
+        # Create packages with different change levels
+        major_update = UpdatedPackage(
+            name="major-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+        )
+        minor_update = UpdatedPackage(
+            name="minor-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 1, 0)
+        )
+        patch_update = UpdatedPackage(
+            name="patch-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 0, 1)
+        )
+        string_version_update = UpdatedPackage(
+            name="string-pkg", old_version="1.0.0.post0", new_version="1.0.1.post0"
+        )
+
+        # Test packages in mixed order
+        unsorted_packages = [
+            patch_update,
+            major_update,
+            string_version_update,
+            minor_update,
+        ]
+
+        sorted_packages = reporter.sort_packages_by_change_level(unsorted_packages)
+
+        # Verify order: major first, then minor, then patch, then unknown (string versions)
+        assert len(sorted_packages) == 4
+        assert sorted_packages[0].name == "major-pkg"  # MAJOR = 2
+        assert sorted_packages[1].name == "minor-pkg"  # MINOR = 1
+        assert sorted_packages[2].name == "patch-pkg"  # PATCH = 0
+        assert sorted_packages[3].name == "string-pkg"  # UNKNOWN = -1
+
+    def test_sort_packages_by_change_level_same_level(self):
+        """Test sorting when multiple packages have the same change level."""
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
+
+        # Create multiple packages with same change level
+        major_update_1 = UpdatedPackage(
+            name="alpha-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+        )
+        major_update_2 = UpdatedPackage(
+            name="beta-pkg", old_version=Version(1, 5, 3), new_version=Version(3, 0, 0)
+        )
+        minor_update = UpdatedPackage(
+            name="minor-pkg", old_version=Version(2, 1, 0), new_version=Version(2, 2, 0)
+        )
+
+        packages = [minor_update, major_update_1, major_update_2]
+
+        sorted_packages = reporter.sort_packages_by_change_level(packages)
+
+        # Both major updates should come before minor update
+        assert len(sorted_packages) == 3
+        assert sorted_packages[0].name in [
+            "alpha-pkg",
+            "beta-pkg",
+        ]  # Either major update
+        assert sorted_packages[1].name in [
+            "alpha-pkg",
+            "beta-pkg",
+        ]  # The other major update
+        assert sorted_packages[2].name == "minor-pkg"  # Minor update last
+
+    def test_sort_packages_by_change_level_empty_list(self):
+        """Test sorting an empty list of packages."""
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
+
+        sorted_packages = reporter.sort_packages_by_change_level([])
+
+        assert sorted_packages == []
+
+    def test_sort_packages_by_change_level_verifies_change_levels(self):
+        """Test that the sorted packages actually have the correct change levels in descending order."""
+        reporter = LockFileReporter(
+            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+        )
+
+        # Create packages with all possible change levels
+        major_update = UpdatedPackage(
+            name="major-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+        )
+        minor_update = UpdatedPackage(
+            name="minor-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 1, 0)
+        )
+        patch_update = UpdatedPackage(
+            name="patch-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 0, 1)
+        )
+        unknown_update = UpdatedPackage(
+            name="unknown-pkg", old_version="1.0.0.post0", new_version="1.0.1.post0"
+        )
+
+        packages = [patch_update, unknown_update, major_update, minor_update]
+
+        sorted_packages = reporter.sort_packages_by_change_level(packages)
+
+        # Verify the change levels are in descending order
+        assert sorted_packages[0].change_level() == VersionChangeLevel.MAJOR  # 2
+        assert sorted_packages[1].change_level() == VersionChangeLevel.MINOR  # 1
+        assert sorted_packages[2].change_level() == VersionChangeLevel.PATCH  # 0
+        assert sorted_packages[3].change_level() == VersionChangeLevel.UNKNOWN  # -1
