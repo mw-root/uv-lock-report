@@ -39,7 +39,7 @@ runs:
       with:
         github-token: ${{ inputs.github-token }}
         script: |
-          // 1. Retrieve existing bot comments for the PR
+          // Find existing report comments for the PR
           const { data: comments } = await github.rest.issues.listComments({
             owner: context.repo.owner,
             repo: context.repo.repo,
@@ -48,6 +48,7 @@ runs:
           const lockReportComment = comments.find(comment => {
             return comment.user.type === 'Bot' && comment.body.includes('# uv Lockfile Report')
             });
+          // Delete existing report comments
           if (lockReportComment) {
             github.rest.issues.deleteComment({
               owner: context.repo.owner,
@@ -55,6 +56,7 @@ runs:
               comment_id: lockReportComment.id,
             });
           }
+          // Post new report comment
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,

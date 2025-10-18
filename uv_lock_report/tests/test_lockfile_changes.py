@@ -14,7 +14,7 @@ from .conftest import (
 class TestLockfileChanges:
     def test_empty_markdown(self):
         lfc = LockfileChanges(output_format=OutputFormat.TABLE)
-        assert lfc.markdown == "# uv Lockfile Report"
+        assert lfc.markdown == "## uv Lockfile Report"
 
     def test_full_markdown_table(self):
         lfc = LockfileChanges(
