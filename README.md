@@ -6,8 +6,8 @@
 
 <!-- AUTO-DOC-DESCRIPTION:START - Do not remove or modify this section -->
 
-Digests complex `uv.lock` diffs in Pull Requests and provides a simple,
-readable summary of dependency changes as a PR comment.
+Digests complex `uv.lock` diffs in Pull Requests and provides a
+simple summary of dependency changes as a PR comment.
 
 <!-- AUTO-DOC-DESCRIPTION:END -->
 
