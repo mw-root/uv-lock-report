@@ -22,6 +22,8 @@ No more parsing through hundreds of lines of TOML diffs to understand what chang
 
 ## Example Usage
 ```yaml
+name: uv Lockfile Report
+
 on:
   pull_request:
 
@@ -33,12 +35,12 @@ jobs:
   report:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Report
-        uses: mw-root/uv-lock-report@v1.0.0
+        uses: mw-root/uv-lock-report@v0.7.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
