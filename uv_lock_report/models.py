@@ -172,6 +172,7 @@ class LockfileChanges(BaseModel):
     removed: list[LockfilePackage] = []
     updated: list[UpdatedPackage] = []
     output_format: OutputFormat
+    show_learn_more_link: bool
 
     def __str__(self) -> str:
         all = []
@@ -290,7 +291,21 @@ class LockfileChanges(BaseModel):
                     for removed in self.removed
                 ]
             )
+
+        if self.show_learn_more_link:
+            all.append(self.learn_more_link_text)
         return "\n".join(all)
+
+    @computed_field
+    @property
+    def learn_more_link_text(self) -> str:
+        return "\n".join(
+            [
+                "",
+                "---",
+                "Learn more about this report at https://github.com/mw-root/uv-lock-report",
+            ]
+        )
 
 
 class LockFileType(StrEnum):
@@ -328,10 +343,12 @@ class LockFileReporter:
         old_lockfile: UvLockFile | None,
         new_lockfile: UvLockFile | None,
         output_format: OutputFormat,
+        show_learn_more_link: bool,
     ) -> None:
         self.old_lockfile = old_lockfile
         self.new_lockfile = new_lockfile
         self.output_format = output_format
+        self.show_learn_more_link = show_learn_more_link
 
     @cached_property
     def both_lockfile_package_names(self) -> set[str]:
@@ -350,6 +367,7 @@ class LockFileReporter:
             added=self.get_added_packages(),
             removed=self.get_removed_packages(),
             updated=self.get_updated_packages(),
+            show_learn_more_link=self.show_learn_more_link,
             output_format=self.output_format,
         )
 

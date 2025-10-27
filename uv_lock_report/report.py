@@ -50,6 +50,7 @@ def report(
     base_path: str,
     output_path: str,
     output_format: OutputFormat = OutputFormat.TABLE,
+    show_learn_more_link: bool = True,
 ) -> None:
     old_lockfile = get_old_uv_lock_file(base_sha, base_path)
     new_lockfile = get_new_uv_lock_file(base_path)
@@ -58,6 +59,10 @@ def report(
         old_lockfile=old_lockfile,
         new_lockfile=new_lockfile,
         output_format=output_format,
+        show_learn_more_link=show_learn_more_link,
     )
 
-    write_changes_file(lockfile_changes=reporter.get_changes(), output_path=output_path)
+    write_changes_file(
+        lockfile_changes=reporter.get_changes(),
+        output_path=output_path,
+    )
