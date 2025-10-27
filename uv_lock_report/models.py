@@ -19,6 +19,20 @@ class VersionChangeLevel(IntEnum):
     PATCH = 2
     UNKNOWN = 10
 
+    @property
+    def gitmoji(self) -> str:
+        match self:
+            case VersionChangeLevel.MAJOR:
+                return ":collision:"
+            case VersionChangeLevel.MINOR:
+                return ":sparkles:"
+            case VersionChangeLevel.PATCH:
+                return ":hammer_and_wrench:"
+            case VersionChangeLevel.UNKNOWN:
+                return ":question:"
+            case _:
+                raise NotImplementedError()
+
 
 BASEVERSION = re.compile(
     r"""[vV]?
@@ -263,7 +277,7 @@ class LockfileChanges(BaseModel):
             all.append(f"{sections} Changed Packages")
             all.extend(
                 [
-                    f"\\`{updated.name}\\`: \\`{updated.old_version}\\` -> \\`{updated.new_version}\\`"
+                    f"{updated.change_level().gitmoji} \\`{updated.name}\\`: \\`{updated.old_version}\\` -> \\`{updated.new_version}\\`"
                     for updated in self.updated
                 ]
             )
