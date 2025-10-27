@@ -9,6 +9,11 @@ inputs:
   github-token:
     description: GitHub Token
     required: true
+  show-learn-more-link:
+    description: >-
+      Whether to show a "Learn More" link in the report comment.
+    required: false
+    default: "true"
   output-format:
     description: >-
       The output format of the report. One of: simple, table
@@ -31,7 +36,8 @@ runs:
           --base-sha "${{ github.event.pull_request.base.sha }}" \
           --base-path "${{ github.workspace }}" \
           --output-path ${{ github.action_path }}/report.json \
-          --output-format "${{ inputs.output-format }}"
+          --output-format "${{ inputs.output-format }}" \
+          --show-learn-more-link "${{ inputs.show-learn-more-link }}"
         echo report=$(cat report.json) >> "$GITHUB_OUTPUT"
 
     - name: Post a comment to the PR

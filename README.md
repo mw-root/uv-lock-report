@@ -49,10 +49,11 @@ jobs:
 
 <!-- AUTO-DOC-INPUT:START - Do not remove or modify this section -->
 
-|     INPUT     |  TYPE  | REQUIRED |  DEFAULT   |                         DESCRIPTION                         |
-|---------------|--------|----------|------------|-------------------------------------------------------------|
-| github-token  | string |   true   |            |                        GitHub Token                         |
-| output-format | string |  false   | `"simple"` | The output format of the report. <br>One of: simple, table  |
+|        INPUT         |  TYPE  | REQUIRED |  DEFAULT   |                           DESCRIPTION                           |
+|----------------------|--------|----------|------------|-----------------------------------------------------------------|
+|     github-token     | string |   true   |            |                          GitHub Token                           |
+|    output-format     | string |  false   | `"simple"` |   The output format of the report. <br>One of: simple, table    |
+| show-learn-more-link | string |  false   |  `"true"`  | Whether to show a "Learn More" <br>link in the report comment.  |
 
 <!-- AUTO-DOC-INPUT:END -->
 

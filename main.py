@@ -15,6 +15,13 @@ def parse_args() -> Namespace:
         default=OutputFormat.TABLE.value,
         required=False,
     )
+    parser.add_argument(
+        "--show-learn-more-link",
+        choices=["true", "false"],
+        default="true",
+        required=False,
+        help='Whether to show a "Learn More" link in the report comment.',
+    )
     return parser.parse_args()
 
 
@@ -25,7 +32,13 @@ def main():
     base_path = args.base_path
     output_path = args.output_path
     output_format = OutputFormat(args.output_format)
-    report(base_sha, base_path, output_path, output_format=output_format)
+    report(
+        base_sha=base_sha,
+        base_path=base_path,
+        output_path=output_path,
+        output_format=output_format,
+        show_learn_more_link=args.show_learn_more_link == "true",
+    )
 
 
 if __name__ == "__main__":

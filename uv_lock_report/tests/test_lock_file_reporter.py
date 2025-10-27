@@ -19,7 +19,10 @@ class TestLockFileReporter:
     def test_both_lockfiles_none(self):
         """Test when both old and new lockfiles are None."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == set()
@@ -48,6 +51,7 @@ class TestLockFileReporter:
             old_lockfile=None,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == {"pkg1", "pkg2"}
@@ -76,6 +80,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=None,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == set()
@@ -111,6 +116,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         assert reporter.added_package_names == set()
@@ -150,6 +156,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == {"pkg2", "pkg3"}
@@ -190,6 +197,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == set()
@@ -230,6 +238,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         assert reporter.added_package_names == set()
@@ -280,6 +289,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         assert reporter.added_package_names == {"pkg4"}
@@ -325,6 +335,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         changes = reporter.get_changes()
@@ -358,6 +369,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=True,
         )
 
         changes = reporter.get_changes()
@@ -389,6 +401,7 @@ class TestLockFileReporter:
             old_lockfile=old_lockfile,
             new_lockfile=new_lockfile,
             output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         # Access cached properties multiple times
@@ -404,7 +417,10 @@ class TestLockFileReporter:
     def test_sort_packages_by_change_level(self):
         """Test that sort_packages_by_change_level returns packages sorted by change level (major first, then minor, then patch)."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         # Create packages with different change levels
@@ -441,7 +457,10 @@ class TestLockFileReporter:
     def test_sort_packages_by_change_level_same_level(self):
         """Test sorting when multiple packages have the same change level - should be alphabetical by name."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         # Create multiple packages with same change level but different names
@@ -478,7 +497,10 @@ class TestLockFileReporter:
     def test_sort_packages_by_change_level_empty_list(self):
         """Test sorting an empty list of packages."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         sorted_packages = reporter.sort_packages_by_change_level([])
@@ -488,7 +510,10 @@ class TestLockFileReporter:
     def test_sort_packages_by_change_level_verifies_change_levels(self):
         """Test that the sorted packages have the correct change levels and names in correct order."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         # Create packages with all possible change levels
@@ -518,7 +543,10 @@ class TestLockFileReporter:
     def test_sort_packages_by_change_level_alphabetical_within_levels(self):
         """Test comprehensive sorting: by change level first, then alphabetically by name."""
         reporter = LockFileReporter(
-            old_lockfile=None, new_lockfile=None, output_format=OutputFormat.TABLE
+            old_lockfile=None,
+            new_lockfile=None,
+            output_format=OutputFormat.TABLE,
+            show_learn_more_link=False,
         )
 
         # Create multiple packages at each change level with non-alphabetical names
