@@ -4,7 +4,14 @@ from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field, computed_field, field_serializer
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_serializer,
+    field_validator,
+)
 from semver import Version
 
 
@@ -87,6 +94,22 @@ class LockfilePackage(BaseModel):
     @field_serializer("version", mode="plain")
     def ser_version(self, value: Version) -> str:
         return str(value)
+
+    @field_validator("version", mode="before")
+    def validate_package_version(cls, v: str | Version):
+        if isinstance(v, Version):
+            return v
+        try:
+            return Version.parse(v, optional_minor_and_patch=True)
+        except ValueError:
+            version, rest = coerce(v)
+
+            if version is not None:
+                if rest is not None:
+                    return f"{str(version)}{rest}"
+
+                return version
+        return v
 
     @classmethod
     def from_dict(cls, d: dict) -> "LockfilePackage":
