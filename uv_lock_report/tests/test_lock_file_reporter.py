@@ -1,7 +1,5 @@
 from typing import Any, cast
 
-from semver import Version
-
 from uv_lock_report.models import (
     LockfilePackage,
     LockFileReporter,
@@ -38,8 +36,8 @@ class TestLockFileReporter:
     def test_old_lockfile_none_new_lockfile_has_packages(self):
         """Test when old lockfile is None and new lockfile has packages (initial lockfile)."""
         new_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
         ]
         new_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -67,8 +65,8 @@ class TestLockFileReporter:
     def test_new_lockfile_none_old_lockfile_has_packages(self):
         """Test when new lockfile is None and old lockfile has packages (lockfile deleted)."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -96,8 +94,8 @@ class TestLockFileReporter:
     def test_no_changes(self):
         """Test when both lockfiles are identical."""
         packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -132,12 +130,12 @@ class TestLockFileReporter:
     def test_added_packages_only(self):
         """Test when only new packages are added."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
         ]
         new_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
-            LockfilePackage(name="pkg3", version=Version(3, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
+            LockfilePackage(name="pkg3", version="3.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -173,12 +171,12 @@ class TestLockFileReporter:
     def test_removed_packages_only(self):
         """Test when only packages are removed."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
-            LockfilePackage(name="pkg3", version=Version(3, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
+            LockfilePackage(name="pkg3", version="3.0.0"),
         ]
         new_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -214,12 +212,12 @@ class TestLockFileReporter:
     def test_updated_packages_only(self):
         """Test when only package versions are updated."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
         ]
         new_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 5, 0)),
-            LockfilePackage(name="pkg2", version=Version(3, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.5.0"),
+            LockfilePackage(name="pkg2", version="3.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -253,22 +251,22 @@ class TestLockFileReporter:
 
         # Verify the update details
         updates_by_name = {pkg.name: pkg for pkg in changes.updated}
-        assert updates_by_name["pkg1"].old_version == Version(1, 0, 0)
-        assert updates_by_name["pkg1"].new_version == Version(1, 5, 0)
-        assert updates_by_name["pkg2"].old_version == Version(2, 0, 0)
-        assert updates_by_name["pkg2"].new_version == Version(3, 0, 0)
+        assert updates_by_name["pkg1"].old_version == "1.0.0"
+        assert updates_by_name["pkg1"].new_version == "1.5.0"
+        assert updates_by_name["pkg2"].old_version == "2.0.0"
+        assert updates_by_name["pkg2"].new_version == "3.0.0"
 
     def test_mixed_changes(self):
         """Test when packages are added, removed, and updated."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
-            LockfilePackage(name="pkg3", version=Version(3, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
+            LockfilePackage(name="pkg2", version="2.0.0"),
+            LockfilePackage(name="pkg3", version="3.0.0"),
         ]
         new_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 5, 0)),  # Updated
-            LockfilePackage(name="pkg3", version=Version(3, 0, 0)),  # Unchanged
-            LockfilePackage(name="pkg4", version=Version(4, 0, 0)),  # Added
+            LockfilePackage(name="pkg1", version="1.5.0"),  # Updated
+            LockfilePackage(name="pkg3", version="3.0.0"),  # Unchanged
+            LockfilePackage(name="pkg4", version="4.0.0"),  # Added
         ]
         # pkg2 is removed
 
@@ -305,8 +303,8 @@ class TestLockFileReporter:
 
         assert len(changes.updated) == 1
         assert changes.updated[0].name == "pkg1"
-        assert changes.updated[0].old_version == Version(1, 0, 0)
-        assert changes.updated[0].new_version == Version(1, 5, 0)
+        assert changes.updated[0].old_version == "1.0.0"
+        assert changes.updated[0].new_version == "1.5.0"
 
         assert changes.items == 3
 
@@ -348,9 +346,9 @@ class TestLockFileReporter:
         """Test that the order of added packages is preserved from the new lockfile."""
         old_packages = []
         new_packages = [
-            LockfilePackage(name="zebra", version=Version(1, 0, 0)),
-            LockfilePackage(name="alpha", version=Version(2, 0, 0)),
-            LockfilePackage(name="beta", version=Version(3, 0, 0)),
+            LockfilePackage(name="zebra", version="1.0.0"),
+            LockfilePackage(name="alpha", version="2.0.0"),
+            LockfilePackage(name="beta", version="3.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -379,10 +377,10 @@ class TestLockFileReporter:
     def test_cached_properties(self):
         """Test that cached properties work correctly."""
         old_packages = [
-            LockfilePackage(name="pkg1", version=Version(1, 0, 0)),
+            LockfilePackage(name="pkg1", version="1.0.0"),
         ]
         new_packages = [
-            LockfilePackage(name="pkg2", version=Version(2, 0, 0)),
+            LockfilePackage(name="pkg2", version="2.0.0"),
         ]
         old_lockfile = UvLockFile(
             type=LockFileType.UV,
@@ -425,13 +423,13 @@ class TestLockFileReporter:
 
         # Create packages with different change levels
         major_update = UpdatedPackage(
-            name="major-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+            name="major-pkg", old_version="1.0.0", new_version="2.0.0"
         )
         minor_update = UpdatedPackage(
-            name="minor-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 1, 0)
+            name="minor-pkg", old_version="1.0.0", new_version="1.1.0"
         )
         patch_update = UpdatedPackage(
-            name="patch-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 0, 1)
+            name="patch-pkg", old_version="1.0.0", new_version="1.0.1"
         )
         string_version_update = UpdatedPackage(
             name="string-pkg", old_version="1.0.0.post0", new_version="1.0.1.post0"
@@ -465,16 +463,16 @@ class TestLockFileReporter:
 
         # Create multiple packages with same change level but different names
         major_update_zebra = UpdatedPackage(
-            name="zebra-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+            name="zebra-pkg", old_version="1.0.0", new_version="2.0.0"
         )
         major_update_alpha = UpdatedPackage(
-            name="alpha-pkg", old_version=Version(1, 5, 3), new_version=Version(3, 0, 0)
+            name="alpha-pkg", old_version="1.5.3", new_version="3.0.0"
         )
         major_update_beta = UpdatedPackage(
-            name="beta-pkg", old_version=Version(2, 0, 0), new_version=Version(5, 0, 0)
+            name="beta-pkg", old_version="2.0.0", new_version="5.0.0"
         )
         minor_update = UpdatedPackage(
-            name="minor-pkg", old_version=Version(2, 1, 0), new_version=Version(2, 2, 0)
+            name="minor-pkg", old_version="2.1.0", new_version="2.2.0"
         )
 
         # Pass in non-alphabetical order
@@ -518,27 +516,28 @@ class TestLockFileReporter:
 
         # Create packages with all possible change levels
         major_update = UpdatedPackage(
-            name="major-pkg", old_version=Version(1, 0, 0), new_version=Version(2, 0, 0)
+            name="major-pkg", old_version="1.0.0", new_version="2.0.0"
         )
         minor_update = UpdatedPackage(
-            name="minor-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 1, 0)
+            name="minor-pkg", old_version="1.0.0", new_version="1.1.0"
         )
         patch_update = UpdatedPackage(
-            name="patch-pkg", old_version=Version(1, 0, 0), new_version=Version(1, 0, 1)
+            name="patch-pkg", old_version="1.0.0", new_version="1.0.1"
         )
-        unknown_update = UpdatedPackage(
-            name="unknown-pkg", old_version="1.0.0.post0", new_version="1.0.1.post0"
+        post_patch_update = UpdatedPackage(
+            name="post-pkg", old_version="1.0.0.post0", new_version="1.0.1.post0"
         )
 
-        packages = [patch_update, unknown_update, major_update, minor_update]
+        packages = [patch_update, post_patch_update, major_update, minor_update]
 
         sorted_packages = reporter.sort_packages_by_change_level(packages)
 
-        # Verify the change levels are in correct order (MAJOR=0, MINOR=1, PATCH=2, UNKNOWN=10)
+        # Verify the change levels are in correct order (MAJOR=0, MINOR=1, PATCH=2)
+        # Note: .post0 versions are correctly parsed as PATCH changes by packaging.version
         assert sorted_packages[0].change_level() == VersionChangeLevel.MAJOR  # 0
         assert sorted_packages[1].change_level() == VersionChangeLevel.MINOR  # 1
         assert sorted_packages[2].change_level() == VersionChangeLevel.PATCH  # 2
-        assert sorted_packages[3].change_level() == VersionChangeLevel.UNKNOWN  # 10
+        assert sorted_packages[3].change_level() == VersionChangeLevel.PATCH  # 2
 
     def test_sort_packages_by_change_level_alphabetical_within_levels(self):
         """Test comprehensive sorting: by change level first, then alphabetically by name."""
@@ -554,44 +553,44 @@ class TestLockFileReporter:
             # PATCH updates
             UpdatedPackage(
                 name="zulu-patch",
-                old_version=Version(1, 0, 0),
-                new_version=Version(1, 0, 1),
+                old_version="1.0.0",
+                new_version="1.0.1",
             ),
             UpdatedPackage(
                 name="alpha-patch",
-                old_version=Version(1, 0, 0),
-                new_version=Version(1, 0, 2),
+                old_version="1.0.0",
+                new_version="1.0.2",
             ),
             # MINOR updates
             UpdatedPackage(
                 name="yankee-minor",
-                old_version=Version(1, 0, 0),
-                new_version=Version(1, 1, 0),
+                old_version="1.0.0",
+                new_version="1.1.0",
             ),
             UpdatedPackage(
                 name="bravo-minor",
-                old_version=Version(1, 0, 0),
-                new_version=Version(1, 2, 0),
+                old_version="1.0.0",
+                new_version="1.2.0",
             ),
             # MAJOR updates
             UpdatedPackage(
                 name="whiskey-major",
-                old_version=Version(1, 0, 0),
-                new_version=Version(2, 0, 0),
+                old_version="1.0.0",
+                new_version="2.0.0",
             ),
             UpdatedPackage(
                 name="charlie-major",
-                old_version=Version(1, 0, 0),
-                new_version=Version(3, 0, 0),
+                old_version="1.0.0",
+                new_version="3.0.0",
             ),
-            # UNKNOWN updates
+            # POST PATCH updates (also PATCH level with packaging.version)
             UpdatedPackage(
-                name="victor-unknown",
+                name="victor-post",
                 old_version="1.0.0.post0",
                 new_version="2.0.0.post0",
             ),
             UpdatedPackage(
-                name="delta-unknown",
+                name="delta-post",
                 old_version="1.0.0.post0",
                 new_version="1.1.0.post0",
             ),
@@ -599,16 +598,17 @@ class TestLockFileReporter:
 
         sorted_packages = reporter.sort_packages_by_change_level(packages)
 
-        # Verify correct order: MAJOR (alphabetical), MINOR (alphabetical), PATCH (alphabetical), UNKNOWN (alphabetical)
+        # Verify correct order: MAJOR (alphabetical), MINOR (alphabetical), PATCH (alphabetical)
+        # Note: .post versions are now correctly parsed, so victor-post is MAJOR and delta-post is MINOR
         expected_order = [
             "charlie-major",  # MAJOR, alphabetically first
-            "whiskey-major",  # MAJOR, alphabetically second
+            "victor-post",  # MAJOR (2.0.0.post0), alphabetically second
+            "whiskey-major",  # MAJOR, alphabetically third
             "bravo-minor",  # MINOR, alphabetically first
-            "yankee-minor",  # MINOR, alphabetically second
+            "delta-post",  # MINOR (1.1.0.post0), alphabetically second
+            "yankee-minor",  # MINOR, alphabetically third
             "alpha-patch",  # PATCH, alphabetically first
             "zulu-patch",  # PATCH, alphabetically second
-            "delta-unknown",  # UNKNOWN, alphabetically first
-            "victor-unknown",  # UNKNOWN, alphabetically second
         ]
 
         actual_order = [pkg.name for pkg in sorted_packages]
