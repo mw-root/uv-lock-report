@@ -1,5 +1,3 @@
-from semver import Version
-
 from uv_lock_report.models import LockfilePackage, OutputFormat, UpdatedPackage
 
 ADDED_PACKAGES: list[LockfilePackage] = [
