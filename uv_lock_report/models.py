@@ -2,22 +2,24 @@ import re
 import tomllib
 from enum import IntEnum, StrEnum, auto
 from functools import cached_property
-from typing import Optional
 
+from packaging.version import parse
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
     computed_field,
-    field_serializer,
-    field_validator,
 )
-from semver import Version
 
 
 class OutputFormat(StrEnum):
     TABLE = auto()
     SIMPLE = auto()
+
+
+class VersionChangeType(StrEnum):
+    UPGRADE = auto()
+    DOWNGRADE = auto()
 
 
 class VersionChangeLevel(IntEnum):
@@ -55,123 +57,50 @@ BASEVERSION = re.compile(
 )
 
 
-def coerce(version: str) -> tuple[Version | None, Optional[str]]:
-    """
-    Convert an incomplete version string into a semver-compatible Version
-    object
-
-    * Tries to detect a "basic" version string (``major.minor.patch``).
-    * If not enough components can be found, missing components are
-        set to zero to obtain a valid semver version.
-
-    :param str version: the version string to convert
-    :return: a tuple with a :class:`Version` instance (or ``None``
-        if it's not a version) and the rest of the string which doesn't
-        belong to a basic version.
-    :rtype: tuple(:class:`Version` | None, str)
-    """
-    match = BASEVERSION.search(version)
-    if not match:
-        return (None, version)
-
-    ver = {
-        key: 0 if value is None else value for key, value in match.groupdict().items()
-    }
-    ver = Version(**ver)  # ty: ignore[missing-argument]
-    rest = match.string[match.end() :]  # noqa:E203
-    return ver, rest
-
-
 class LockfilePackage(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
-    version: Version | str | None = None
+    version: str
 
     def __str__(self) -> str:
         return f"{self.name}: {self.version}"
 
-    @field_serializer("version", mode="plain")
-    def ser_version(self, value: Version) -> str:
-        return str(value)
-
-    @field_validator("version", mode="before")
-    def validate_package_version(cls, v: str | Version):
-        if isinstance(v, Version):
-            return v
-        try:
-            return Version.parse(v, optional_minor_and_patch=True)
-        except ValueError:
-            version, rest = coerce(v)
-
-            if version is not None:
-                if rest is not None:
-                    return f"{str(version)}{rest}"
-
-                return version
-        return v
-
-    @classmethod
-    def from_dict(cls, d: dict) -> "LockfilePackage":
-        try:
-            return cls(
-                name=d["name"],
-                version=Version.parse(d["version"], optional_minor_and_patch=True),
-            )
-        except ValueError:
-            version, rest = coerce(d["version"])
-
-            if version is not None:
-                if rest is not None:
-                    return cls(
-                        name=d["name"],
-                        version=f"{str(version)}{rest}",
-                    )
-
-                return cls(
-                    name=d["name"],
-                    version=version,
-                )
-
-        return cls(
-            name=d["name"],
-            version=d["version"],
-        )
-
     def __eq__(self, other):
         if not isinstance(other, LockfilePackage):
             return NotImplemented
-        return self.name == other.name and self.version == other.version
+        return self.name == other.name and parse(self.version) == parse(other.version)
 
 
 class UpdatedPackage(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
-    old_version: Version | str
-    new_version: Version | str
+    old_version: str
+    new_version: str
 
     def __str__(self) -> str:
         return f"{self.name}: {self.old_version} -> {self.new_version}"
 
-    @field_serializer("old_version", mode="plain")
-    def ser_old_version(self, value: Version) -> str:
-        return str(value)
-
-    @field_serializer("new_version", mode="plain")
-    def ser_new_version(self, value: Version) -> str:
-        return str(value)
+    def change_type(self) -> VersionChangeType:
+        old_ver = parse(self.old_version)
+        new_ver = parse(self.new_version)
+        if new_ver > old_ver:
+            return VersionChangeType.UPGRADE
+        else:
+            return VersionChangeType.DOWNGRADE
 
     def change_level(self) -> VersionChangeLevel:
-        if isinstance(self.old_version, Version) and isinstance(
-            self.new_version, Version
-        ):
-            if self.new_version.major != self.old_version.major:
-                return VersionChangeLevel.MAJOR
-            elif self.new_version.minor != self.old_version.minor:
-                return VersionChangeLevel.MINOR
-            elif self.new_version.patch != self.old_version.patch:
-                return VersionChangeLevel.PATCH
+        old_version = parse(self.old_version)
+        new_version = parse(self.new_version)
+
+        if new_version.major != old_version.major:
+            return VersionChangeLevel.MAJOR
+        elif new_version.minor != old_version.minor:
+            return VersionChangeLevel.MINOR
+        elif new_version.micro != old_version.micro:
+            return VersionChangeLevel.PATCH
+
         return VersionChangeLevel.UNKNOWN
 
 
