@@ -237,6 +237,7 @@ name = "uv-lock-report"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "packaging" },
     { name = "pydantic" },
 ]
 
@@ -251,7 +252,10 @@ test = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.11.9" }]
+requires-dist = [
+    { name = "packaging", specifier = ">=25.0" },
+    { name = "pydantic", specifier = ">=2.11.9" },
+]
 
 [package.metadata.requires-dev]
 dev = [
