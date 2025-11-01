@@ -61,7 +61,7 @@ class LockfilePackage(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     name: str
-    version: str
+    version: str | None = None
 
     def __str__(self) -> str:
         return f"{self.name}: {self.version}"
@@ -69,6 +69,8 @@ class LockfilePackage(BaseModel):
     def __eq__(self, other):
         if not isinstance(other, LockfilePackage):
             return NotImplemented
+        if self.version is None or other.version is None:
+            return self.name == other.name and self.version == other.version
         return self.name == other.name and parse(self.version) == parse(other.version)
 
 
