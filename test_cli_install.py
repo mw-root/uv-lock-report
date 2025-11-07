@@ -10,7 +10,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+import pytest
 
+
+@pytest.mark.skip("Manual only, requires package to be built in ./dist")
 def test_cli_help():
     """Test that the CLI help command works."""
     print("Testing CLI help command...")
@@ -30,6 +33,7 @@ def test_cli_help():
         assert False, "uv-lock-report command not found in PATH"
 
 
+@pytest.mark.skip("Manual only, requires package to be built in ./dist")
 def test_cli_import():
     """Test that the CLI module can be imported."""
     print("Testing CLI module import...")
@@ -43,6 +47,7 @@ def test_cli_import():
         assert False, f"CLI module import failed: {e}"
 
 
+@pytest.mark.skip("Manual only, requires package to be built in ./dist")
 def test_wheel_installation():
     """Test installation from wheel file."""
     print("Testing wheel installation...")
@@ -77,6 +82,7 @@ def test_wheel_installation():
         assert False, f"Wheel installation test failed: {e}"
 
 
+@pytest.mark.skip("Manual only, requires package to be built in ./dist")
 def test_mock_execution():
     """Test CLI with mock arguments (will fail but should parse args correctly)."""
     print("Testing CLI argument parsing...")
