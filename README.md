@@ -20,7 +20,8 @@ It analyzes the changes between your base and head lockfiles, then posts a forma
 No more parsing through hundreds of lines of TOML diffs to understand what changed.
 
 
-## Example Usage
+## Example Gitlab Actions Usage
+
 ```yaml
 name: uv Lockfile Report
 
@@ -69,3 +70,53 @@ The formatting can be chosen with the `output-format` input.
 
 #### Table Format
 ![Example Comment](images/uv-lock-report-table-comment.png "Table Format")
+
+## CLI Usage
+
+You can also use `uv-lock-report` as a standalone CLI tool for local development or in custom CI/CD pipelines.
+
+### Installation
+
+Install the package using uv:
+
+```bash
+uv build
+pip install ./dist/uv_lock_report-0.1.0-py3-none-any.whl
+```
+
+### Usage
+
+```bash
+uv-lock-report --base-sha <git-sha> --base-path <path-to-base-lockfile> --output-path <output-file>
+```
+
+#### Arguments
+
+- `--base-sha`: Git SHA of the base commit to compare against
+- `--base-path`: Path to the base lockfile (usually `uv.lock`)
+- `--output-path`: Path where the JSON report will be written
+- `--output-format`: Output format (`table` or `simple`, default: `table`)
+- `--show-learn-more-link`: Whether to show "Learn More" link (`true` or `false`, default: `true`)
+
+#### Example
+
+```bash
+# Compare current uv.lock with the one from main branch
+uv-lock-report \
+  --base-sha main \
+  --base-path uv.lock \
+  --output-path report.json \
+  --output-format table
+```
+
+### Testing the installation
+
+You can test that the CLI is properly installed:
+
+```bash
+# Test with a built wheel
+uv run --with ./dist/uv_lock_report-0.1.0-py3-none-any.whl uv-lock-report --help
+
+# Or run the included test script
+uv run python test_cli_install.py
+```
