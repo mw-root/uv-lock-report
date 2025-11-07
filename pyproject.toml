@@ -12,6 +12,11 @@ dependencies = [
 [tool.setuptools.packages.find]
 where = ["uv_lock_report"]
 
+
+[project.scripts]
+uv-lock-report = "uv_lock_report.cli:main"
+
+
 [tool.ruff]
 
 [dependency-groups]
