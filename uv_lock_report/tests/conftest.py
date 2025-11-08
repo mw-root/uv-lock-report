@@ -15,17 +15,17 @@ UPDATED_PACKAGES: list[UpdatedPackage] = [
 
 EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
 ## uv Lockfile Report
-### Added Packages
+### Added
 | Package | Version |
 |--|--|
 | added_1 | 1.0.0 |
 | added_2 | 4.2.0 |
-### Changed Packages
+### Changed
 | Package | Old Version | New Version |
 |--|--|--|
 | updated_1 | 1.0.0 | 2.0.0 |
 | updated_2 | 1.0.0 | 2.0.0 |
-### Removed Packages
+### Removed
 | Package | Version |
 |--|--|
 | removed_1 | 1.0.0 |
@@ -34,29 +34,20 @@ EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
 
 EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE = """
 ## uv Lockfile Report
-### Added Packages
+### Added
 \\`added_1\\`: \\`1.0.0\\`
 \\`added_2\\`: \\`4.2.0\\`
-### Changed Packages
+### Changed
 :collision: \\`updated_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
 :collision: \\`updated_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
-### Removed Packages
+### Removed
 \\`removed_1\\`: \\`1.0.0\\`
 \\`removed_2\\`: \\`4.2.0\\`
 """.strip()
 
 
-EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE_WITH_LINK = """
-## uv Lockfile Report
-### Added Packages
-\\`added_1\\`: \\`1.0.0\\`
-\\`added_2\\`: \\`4.2.0\\`
-### Changed Packages
-:collision: \\`updated_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
-:collision: \\`updated_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
-### Removed Packages
-\\`removed_1\\`: \\`1.0.0\\`
-\\`removed_2\\`: \\`4.2.0\\`
+EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE_WITH_LINK = f"""
+{EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE}
 
 ---
 Learn more about this report at https://github.com/mw-root/uv-lock-report

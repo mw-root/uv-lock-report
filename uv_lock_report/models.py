@@ -58,10 +58,15 @@ BASEVERSION = re.compile(
 
 
 class LockfilePackage(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_by_name=True,
+        validate_by_alias=False,
+        populate_by_name=True,
+    )
 
-    name: str
-    version: str | None = None
+    name: str = Field(alias="Package")
+    version: str | None = Field(alias="Version", default=None)
 
     def __str__(self) -> str:
         return f"{self.name}: {self.version}"
@@ -73,13 +78,24 @@ class LockfilePackage(BaseModel):
             return self.name == other.name and self.version == other.version
         return self.name == other.name and parse(self.version) == parse(other.version)
 
+    def markdown_row(self) -> str:
+        return f"| {self.name} | {self.version} |"
+
+    def markdown_simple(self) -> str:
+        return f"\\`{self.name}\\`: \\`{self.version}\\`"
+
 
 class UpdatedPackage(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        validate_by_name=True,
+        validate_by_alias=False,
+        populate_by_name=True,
+    )
 
-    name: str
-    old_version: str
-    new_version: str
+    name: str = Field(alias="Package")
+    old_version: str = Field(alias="Old Version")
+    new_version: str = Field(alias="New Version")
 
     def __str__(self) -> str:
         return f"{self.name}: {self.old_version} -> {self.new_version}"
@@ -104,6 +120,12 @@ class UpdatedPackage(BaseModel):
             return VersionChangeLevel.PATCH
 
         return VersionChangeLevel.UNKNOWN
+
+    def markdown_row(self) -> str:
+        return f"| {self.name} | {self.old_version} | {self.new_version} |"
+
+    def markdown_simple(self) -> str:
+        return f"{self.change_level().gitmoji} \\`{self.name}\\`: \\`{self.old_version}\\` -> \\`{self.new_version}\\`"
 
 
 class RequiresPythonChanges(BaseModel):
@@ -175,42 +197,54 @@ class LockfileChanges(BaseModel):
                 f"\\`{self.requires_python.old}\\` -> \\`{self.requires_python.new}\\`"
             )
         if self.added:
-            all.append(f"{sections} Added Packages")
-            all.extend(
-                [
-                    "| Package | Version |",
-                    "|--|--|",
-                ]
-            )
-            all.extend([f"| {added.name} | {added.version} |" for added in self.added])
+            all.append(f"{sections} Added")
+            all.extend(self.__lockfile_package_table_header())
+            all.extend([added.markdown_row() for added in self.added])
 
         if self.updated:
-            all.append(f"{sections} Changed Packages")
-            all.extend(
-                [
-                    "| Package | Old Version | New Version |",
-                    "|--|--|--|",
-                ]
-            )
-            all.extend(
-                [
-                    f"| {updated.name} | {updated.old_version} | {updated.new_version} |"
-                    for updated in self.updated
-                ]
-            )
+            all.append(f"{sections} Changed")
+            all.extend(self.__updated_package_table_header())
+            all.extend([updated.markdown_row() for updated in self.updated])
 
         if self.removed:
-            all.append(f"{sections} Removed Packages")
-            all.extend(
+            all.append(f"{sections} Removed")
+            all.extend(self.__lockfile_package_table_header())
+            all.extend([removed.markdown_row() for removed in self.removed])
+        return "\n".join(all)
+
+    def __lockfile_package_table_header(self) -> list[str]:
+        header = []
+        attribute_order = ("name", "version")
+
+        header.append(
+            "| "
+            + " | ".join(
                 [
-                    "| Package | Version |",
-                    "|--|--|",
+                    str(LockfilePackage.model_fields[attr].alias)
+                    for attr in attribute_order
                 ]
             )
-            all.extend(
-                [f"| {removed.name} | {removed.version} |" for removed in self.removed]
+            + " |"
+        )
+        header.append("|" + "|".join(["--" for _ in attribute_order]) + "|")
+        return header
+
+    def __updated_package_table_header(self) -> list[str]:
+        header = []
+        attribute_order = ("name", "old_version", "new_version")
+
+        header.append(
+            "| "
+            + " | ".join(
+                [
+                    str(UpdatedPackage.model_fields[attr].alias)
+                    for attr in attribute_order
+                ]
             )
-        return "\n".join(all)
+            + " |"
+        )
+        header.append("|" + "|".join(["--" for _ in attribute_order]) + "|")
+        return header
 
     @computed_field
     @property
@@ -224,27 +258,15 @@ class LockfileChanges(BaseModel):
                 f"\\`{self.requires_python.old}\\` -> \\`{self.requires_python.new}\\`"
             )
         if self.added:
-            all.append(f"{sections} Added Packages")
-            all.extend(
-                [f"\\`{added.name}\\`: \\`{added.version}\\`" for added in self.added]
-            )
+            all.append(f"{sections} Added")
+            all.extend([added.markdown_simple() for added in self.added])
         if self.updated:
-            all.append(f"{sections} Changed Packages")
-            all.extend(
-                [
-                    f"{updated.change_level().gitmoji} \\`{updated.name}\\`: \\`{updated.old_version}\\` -> \\`{updated.new_version}\\`"
-                    for updated in self.updated
-                ]
-            )
+            all.append(f"{sections} Changed")
+            all.extend([updated.markdown_simple() for updated in self.updated])
 
         if self.removed:
-            all.append(f"{sections} Removed Packages")
-            all.extend(
-                [
-                    f"\\`{removed.name}\\`: \\`{removed.version}\\`"
-                    for removed in self.removed
-                ]
-            )
+            all.append(f"{sections} Removed")
+            all.extend([removed.markdown_simple() for removed in self.removed])
 
         if self.show_learn_more_link:
             all.append(self.learn_more_link_text)
@@ -399,10 +421,10 @@ class LockFileReporter:
             new_pkg = self.new_lockfile.packages_by_name[pkg_name]
             if old_pkg != new_pkg:
                 updated_packages.append(
-                    UpdatedPackage(
-                        name=pkg_name,
-                        old_version=old_pkg.version,
-                        new_version=new_pkg.version,
-                    )
+                    UpdatedPackage(  # type: ignore
+                        name=pkg_name,  # type: ignore
+                        old_version=old_pkg.version,  # type: ignore
+                        new_version=new_pkg.version,  # type: ignore
+                    )  # type: ignore
                 )
         return self.sort_packages_by_change_level(updated_packages)
