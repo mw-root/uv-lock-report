@@ -150,6 +150,18 @@ class LockfileChanges(BaseModel):
     output_format: OutputFormat
     show_learn_more_link: bool
 
+    @computed_field
+    @property
+    def upgraded(self) -> list[UpdatedPackage]:
+        return [e for e in self.updated if e.change_type() == VersionChangeType.UPGRADE]
+
+    @computed_field
+    @property
+    def downgraded(self) -> list[UpdatedPackage]:
+        return [
+            e for e in self.updated if e.change_type() == VersionChangeType.DOWNGRADE
+        ]
+
     def __str__(self) -> str:
         all = []
         if self.requires_python.has_changes():
@@ -420,6 +432,11 @@ class LockFileReporter:
             old_pkg = self.old_lockfile.packages_by_name[pkg_name]
             new_pkg = self.new_lockfile.packages_by_name[pkg_name]
             if old_pkg != new_pkg:
+                if new_pkg.version is None or old_pkg.version is None:
+                    print(
+                        f"WARNING: Skipping package with None version: {pkg_name=}, {old_pkg=}, {new_pkg=}"
+                    )
+                    continue
                 updated_packages.append(
                     UpdatedPackage(  # type: ignore
                         name=pkg_name,  # type: ignore
