@@ -3,10 +3,7 @@ name = "uv-lock-report"
 description = "Parse and report package changes in uv.lock."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = [
-    "packaging>=25.0",
-    "pydantic>=2.11.9",
-]
+dependencies = ["packaging>=25.0", "pydantic>=2.11.9"]
 dynamic = ["version", "urls"]
 
 [tool.setuptools.packages.find]
@@ -17,6 +14,14 @@ uv-lock-report = "uv_lock_report.cli:main"
 
 
 [tool.ruff]
+
+[tool.ty.src]
+exclude = [
+    "uv_lock_report/tests/test_lock_file_reporter.py",
+    "uv_lock_report/tests/test_updated_package.py",
+    "uv_lock_report/tests/test_lockfile.py",
+    "uv_lock_report/tests/conftest.py",
+]
 
 [dependency-groups]
 dev = [{ include-group = "test" }]
@@ -34,4 +39,3 @@ fallback-version = "0.0.1"
 [tool.hatch.metadata.hooks.vcs.urls]
 Homepage = "https://github.com/mw-root/uv-lock-report"
 Source = "https://github.com/mw-root/uv-lock-report"
-
