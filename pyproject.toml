@@ -29,3 +29,8 @@ build-backend = "hatchling.build"
 
 [tool.hatch.version]
 source = "vcs"
+
+[tool.hatch.metadata.hooks.vcs.urls]
+Homepage = "https://github.com/mw-root/uv-lock-report"
+Source = "https://github.com/mw-root/uv-lock-report"
+
