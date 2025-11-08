@@ -150,6 +150,18 @@ class LockfileChanges(BaseModel):
     output_format: OutputFormat
     show_learn_more_link: bool
 
+    @computed_field
+    @property
+    def upgraded(self):
+        return [e for e in self.updated if e.change_type() == VersionChangeType.UPGRADE]
+
+    @computed_field
+    @property
+    def downgraded(self):
+        return [
+            e for e in self.updated if e.change_type() == VersionChangeType.DOWNGRADE
+        ]
+
     def __str__(self) -> str:
         all = []
         if self.requires_python.has_changes():

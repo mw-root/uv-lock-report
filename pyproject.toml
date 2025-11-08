@@ -17,6 +17,7 @@ uv-lock-report = "uv_lock_report.cli:main"
 
 [tool.ty.src]
 exclude = [
+    # Ty doesn't seem to understand populating pydantic models by name.
     "uv_lock_report/tests/test_lock_file_reporter.py",
     "uv_lock_report/tests/test_updated_package.py",
     "uv_lock_report/tests/test_lockfile.py",
