@@ -1,6 +1,5 @@
 [project]
 name = "uv-lock-report"
-version = "0.1.0"
 description = "Parse and report package changes in uv.lock."
 readme = "README.md"
 requires-python = ">=3.13"
@@ -8,10 +7,10 @@ dependencies = [
     "packaging>=25.0",
     "pydantic>=2.11.9",
 ]
+dynamic = ["version", "urls"]
 
 [tool.setuptools.packages.find]
 where = ["uv_lock_report"]
-
 
 [project.scripts]
 uv-lock-report = "uv_lock_report.cli:main"
@@ -22,3 +21,11 @@ uv-lock-report = "uv_lock_report.cli:main"
 [dependency-groups]
 dev = [{ include-group = "test" }]
 test = ["pytest>=8.4.2", "pytest-cov>=7.0.0"]
+
+
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
