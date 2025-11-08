@@ -1,4 +1,9 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# dependencies = [
+#   "pytest",
+# ]
+# ///
 """
 Simple test script to verify that the uv-lock-report CLI is properly installed
 and can be imported/executed without requiring actual git repositories.
