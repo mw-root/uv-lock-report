@@ -9,8 +9,8 @@ REMOVED_PACKAGES: list[LockfilePackage] = [
     LockfilePackage(name="removed_2", version="4.2.0"),
 ]
 UPDATED_PACKAGES: list[UpdatedPackage] = [
-    UpdatedPackage(name="updated_1", old_version="1.0.0", new_version="2.0.0"),
-    UpdatedPackage(name="updated_2", old_version="1.0.0", new_version="2.0.0"),
+    UpdatedPackage(name="upgraded_1", old_version="1.0.0", new_version="2.0.0"),
+    UpdatedPackage(name="upgraded_2", old_version="1.0.0", new_version="2.0.0"),
 ]
 
 EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
@@ -23,8 +23,8 @@ EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
 ### Changed
 | Package | Old Version | New Version |
 |--|--|--|
-| updated_1 | 1.0.0 | 2.0.0 |
-| updated_2 | 1.0.0 | 2.0.0 |
+| upgraded_1 | 1.0.0 | 2.0.0 |
+| upgraded_2 | 1.0.0 | 2.0.0 |
 ### Removed
 | Package | Version |
 |--|--|
@@ -38,8 +38,8 @@ EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE = """
 \\`added_1\\`: \\`1.0.0\\`
 \\`added_2\\`: \\`4.2.0\\`
 ### Changed
-:collision: \\`updated_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
-:collision: \\`updated_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
+:collision: \\`upgraded_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
+:collision: \\`upgraded_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
 ### Removed
 \\`removed_1\\`: \\`1.0.0\\`
 \\`removed_2\\`: \\`4.2.0\\`
@@ -72,9 +72,14 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_TABLE = {
     "requires_python": {"new": None, "old": None},
     "show_learn_more_link": False,
     "updated": [
-        {"name": "updated_1", "new_version": "2.0.0", "old_version": "1.0.0"},
-        {"name": "updated_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
+    "upgraded": [
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+    ],
+    "downgraded": [],
 }
 
 
@@ -96,9 +101,14 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE = {
     "requires_python": {"new": None, "old": None},
     "show_learn_more_link": False,
     "updated": [
-        {"name": "updated_1", "new_version": "2.0.0", "old_version": "1.0.0"},
-        {"name": "updated_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
+    "upgraded": [
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+    ],
+    "downgraded": [],
 }
 
 EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE_WITH_LINK = {
@@ -119,7 +129,12 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE_WITH_LINK = {
     "requires_python": {"new": None, "old": None},
     "show_learn_more_link": True,
     "updated": [
-        {"name": "updated_1", "new_version": "2.0.0", "old_version": "1.0.0"},
-        {"name": "updated_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
+    "upgraded": [
+        {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+    ],
+    "downgraded": [],
 }
