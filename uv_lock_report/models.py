@@ -152,12 +152,12 @@ class LockfileChanges(BaseModel):
 
     @computed_field
     @property
-    def upgraded(self):
+    def upgraded(self) -> list[UpdatedPackage]:
         return [e for e in self.updated if e.change_type() == VersionChangeType.UPGRADE]
 
     @computed_field
     @property
-    def downgraded(self):
+    def downgraded(self) -> list[UpdatedPackage]:
         return [
             e for e in self.updated if e.change_type() == VersionChangeType.DOWNGRADE
         ]
