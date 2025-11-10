@@ -14,8 +14,6 @@ from uv_lock_report.models import (
     OutputFormat,
 )
 
-__version__ = "0.1.0"
-
 __all__ = [
     "cli_main",
     "report",
@@ -27,3 +25,8 @@ __all__ = [
     "UpdatedPackage",
     "OutputFormat",
 ]
+
+try:
+    from uv_lock_report._version import __version__
+except ImportError:  # pragma: no cover
+    __version__ = "0.0.0"
