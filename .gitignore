@@ -207,3 +207,4 @@ marimo/_lsp/
 __marimo__/
 
 report.json
+uv_lock_report/_version.py
