@@ -3,16 +3,16 @@ uv-lock-report: Parses uv.lock changes and generates Markdown reports.
 """
 
 from uv_lock_report.cli import main as cli_main
-from uv_lock_report.report import report
 from uv_lock_report.models import (
     LockFile,
-    UvLockFile,
-    LockFileReporter,
     LockfileChanges,
     LockfilePackage,
-    UpdatedPackage,
+    LockFileReporter,
     OutputFormat,
+    UpdatedPackage,
+    UvLockFile,
 )
+from uv_lock_report.report import report
 
 __all__ = [
     "cli_main",
@@ -27,6 +27,6 @@ __all__ = [
 ]
 
 try:
-    from uv_lock_report._version import __version__
+    from uv_lock_report._version import __version__  # type: ignore[unresolved-import]
 except ImportError:  # pragma: no cover
     __version__ = "0.0.0"
