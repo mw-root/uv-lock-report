@@ -20,7 +20,7 @@ It analyzes the changes between your base and head lockfiles, then posts a forma
 No more parsing through hundreds of lines of TOML diffs to understand what changed.
 
 
-## Example Gitlab Actions Usage
+## Example GitHub Actions Usage
 
 ```yaml
 name: uv Lockfile Report
