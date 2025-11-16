@@ -172,9 +172,12 @@ class LockfileChanges(BaseModel):
         if self.added:
             all.append("Added:")
             all.extend([str(e) for e in self.added])
+        if self.downgraded:
+            all.append("Downgraded:")
+            all.extend([str(e) for e in self.downgraded])
         if self.updated:
-            all.append("Updated:")
-            all.extend([str(e) for e in self.updated])
+            all.append("Upgraded:")
+            all.extend([str(e) for e in self.upgraded])
         if self.removed:
             all.append("Removed:")
             all.extend([str(e) for e in self.removed])
@@ -213,10 +216,15 @@ class LockfileChanges(BaseModel):
             all.extend(self.__lockfile_package_table_header())
             all.extend([added.markdown_row() for added in self.added])
 
-        if self.updated:
-            all.append(f"{sections} Changed")
+        if self.downgraded:
+            all.append(f"{sections} Downgraded")
             all.extend(self.__updated_package_table_header())
-            all.extend([updated.markdown_row() for updated in self.updated])
+            all.extend([updated.markdown_row() for updated in self.downgraded])
+
+        if self.upgraded:
+            all.append(f"{sections} Upgraded")
+            all.extend(self.__updated_package_table_header())
+            all.extend([updated.markdown_row() for updated in self.upgraded])
 
         if self.removed:
             all.append(f"{sections} Removed")
@@ -272,9 +280,14 @@ class LockfileChanges(BaseModel):
         if self.added:
             all.append(f"{sections} Added")
             all.extend([added.markdown_simple() for added in self.added])
-        if self.updated:
-            all.append(f"{sections} Changed")
-            all.extend([updated.markdown_simple() for updated in self.updated])
+
+        if self.downgraded:
+            all.append(f"{sections} Downgraded")
+            all.extend([updated.markdown_simple() for updated in self.downgraded])
+
+        if self.upgraded:
+            all.append(f"{sections} Upgraded")
+            all.extend([updated.markdown_simple() for updated in self.upgraded])
 
         if self.removed:
             all.append(f"{sections} Removed")

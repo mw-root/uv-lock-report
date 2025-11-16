@@ -1,3 +1,4 @@
+# type: ignore[missing-argument]
 from uv_lock_report.models import LockfilePackage, OutputFormat, UpdatedPackage
 
 ADDED_PACKAGES: list[LockfilePackage] = [
@@ -11,6 +12,8 @@ REMOVED_PACKAGES: list[LockfilePackage] = [
 UPDATED_PACKAGES: list[UpdatedPackage] = [
     UpdatedPackage(name="upgraded_1", old_version="1.0.0", new_version="2.0.0"),
     UpdatedPackage(name="upgraded_2", old_version="1.0.0", new_version="2.0.0"),
+    UpdatedPackage(name="downgraded_1", old_version="2.1.0", new_version="1.3.0"),
+    UpdatedPackage(name="downgraded_2", old_version="5.3.2", new_version="4.9.7"),
 ]
 
 EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
@@ -20,7 +23,12 @@ EXPECTED_LOCKFILE_CHANGES_FULL_TABLE = """
 |--|--|
 | added_1 | 1.0.0 |
 | added_2 | 4.2.0 |
-### Changed
+### Downgraded
+| Package | Old Version | New Version |
+|--|--|--|
+| downgraded_1 | 2.1.0 | 1.3.0 |
+| downgraded_2 | 5.3.2 | 4.9.7 |
+### Upgraded
 | Package | Old Version | New Version |
 |--|--|--|
 | upgraded_1 | 1.0.0 | 2.0.0 |
@@ -37,7 +45,10 @@ EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE = """
 ### Added
 \\`added_1\\`: \\`1.0.0\\`
 \\`added_2\\`: \\`4.2.0\\`
-### Changed
+### Downgraded
+:collision: \\`downgraded_1\\`: \\`2.1.0\\` -> \\`1.3.0\\`
+:collision: \\`downgraded_2\\`: \\`5.3.2\\` -> \\`4.9.7\\`
+### Upgraded
 :collision: \\`upgraded_1\\`: \\`1.0.0\\` -> \\`2.0.0\\`
 :collision: \\`upgraded_2\\`: \\`1.0.0\\` -> \\`2.0.0\\`
 ### Removed
@@ -59,7 +70,7 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_TABLE = {
         {"name": "added_1", "version": "1.0.0"},
         {"name": "added_2", "version": "4.2.0"},
     ],
-    "items": 6,
+    "items": 8,
     "learn_more_link_text": "\n---\nLearn more about this report at https://github.com/mw-root/uv-lock-report",
     "markdown": EXPECTED_LOCKFILE_CHANGES_FULL_TABLE,
     "markdown_simple": EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE,
@@ -74,12 +85,17 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_TABLE = {
     "updated": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
     ],
     "upgraded": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
-    "downgraded": [],
+    "downgraded": [
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
+    ],
 }
 
 
@@ -88,7 +104,7 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE = {
         {"name": "added_1", "version": "1.0.0"},
         {"name": "added_2", "version": "4.2.0"},
     ],
-    "items": 6,
+    "items": 8,
     "learn_more_link_text": "\n---\nLearn more about this report at https://github.com/mw-root/uv-lock-report",
     "markdown": EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE,
     "markdown_simple": EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE,
@@ -103,12 +119,17 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE = {
     "updated": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
     ],
     "upgraded": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
-    "downgraded": [],
+    "downgraded": [
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
+    ],
 }
 
 EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE_WITH_LINK = {
@@ -116,7 +137,7 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE_WITH_LINK = {
         {"name": "added_1", "version": "1.0.0"},
         {"name": "added_2", "version": "4.2.0"},
     ],
-    "items": 6,
+    "items": 8,
     "learn_more_link_text": "\n---\nLearn more about this report at https://github.com/mw-root/uv-lock-report",
     "markdown": EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE_WITH_LINK,
     "markdown_simple": EXPECTED_LOCKFILE_CHANGES_FULL_SIMPLE_WITH_LINK,
@@ -131,10 +152,15 @@ EXPECTED_LOCKFILE_CHANGES_FULL_MODEL_DUMP_SIMPLE_WITH_LINK = {
     "updated": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
     ],
     "upgraded": [
         {"name": "upgraded_1", "new_version": "2.0.0", "old_version": "1.0.0"},
         {"name": "upgraded_2", "new_version": "2.0.0", "old_version": "1.0.0"},
     ],
-    "downgraded": [],
+    "downgraded": [
+        {"name": "downgraded_1", "new_version": "1.3.0", "old_version": "2.1.0"},
+        {"name": "downgraded_2", "new_version": "4.9.7", "old_version": "5.3.2"},
+    ],
 }
