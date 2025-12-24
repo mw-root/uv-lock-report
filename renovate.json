@@ -1,40 +1,54 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "config:recommended",
-        ":configMigration",
-        ":pinDevDependencies"
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    "helpers:pinGitHubActionDigests",
+    ":configMigration",
+    ":pinDevDependencies"
+  ],
+  "lockFileMaintenance": {
+    "enabled": true,
+    "recreateWhen": "always",
+    "rebaseWhen": "behind-base-branch",
+    "branchTopic": "lock-file-maintenance",
+    "commitMessageAction": "Lock file maintenance",
+    "schedule": [
+      "before 9am on monday"
     ],
-    "vulnerabilityAlerts": {
-        "groupName": null,
-        "schedule": [],
-        "dependencyDashboardApproval": false,
-        "minimumReleaseAge": null,
-        "rangeStrategy": "update-lockfile",
-        "commitMessageSuffix": "[SECURITY]",
-        "branchTopic": "{{{datasource}}}-{{{depNameSanitized}}}-vulnerability",
-        "prCreation": "immediate",
-        "vulnerabilityFixStrategy": "lowest"
-    },
-    "lockFileMaintenance": {
-        "enabled": true
-    },
-    "pre-commit": {
-        "enabled": true
-    },
-    "packageRules": [
-        {
-            "matchManagers": [
-                "github-actions"
-            ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "pin",
-                "digest"
-            ],
-            "automerge": true,
-            "groupName": "Minor / Patch GitHub Actions"
-        }
-    ]
+    "groupName": null,
+    "prBodyDefinitions": {
+      "Change": "All locks refreshed"
+    }
+  },
+  "vulnerabilityAlerts": {
+    "groupName": null,
+    "schedule": [],
+    "dependencyDashboardApproval": false,
+    "minimumReleaseAge": null,
+    "rangeStrategy": "update-lockfile",
+    "commitMessageSuffix": "[SECURITY]",
+    "branchTopic": "{{{datasource}}}-{{{depNameSanitized}}}-vulnerability",
+    "prCreation": "immediate",
+    "vulnerabilityFixStrategy": "lowest"
+  },
+  "pre-commit": {
+    "enabled": true
+  },
+  "packageRules": [
+    {
+      "description": "Group all GitHub Actions updates into a single PR",
+      "groupName": "Minor and patch GitHub Actions updates",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pinDigest"
+      ],
+      "enabled": true
+    }
+  ]
 }
