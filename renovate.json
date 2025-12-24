@@ -1,40 +1,6 @@
 {
-    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": [
-        "config:recommended",
-        ":configMigration",
-        ":pinDevDependencies"
-    ],
-    "vulnerabilityAlerts": {
-        "groupName": null,
-        "schedule": [],
-        "dependencyDashboardApproval": false,
-        "minimumReleaseAge": null,
-        "rangeStrategy": "update-lockfile",
-        "commitMessageSuffix": "[SECURITY]",
-        "branchTopic": "{{{datasource}}}-{{{depNameSanitized}}}-vulnerability",
-        "prCreation": "immediate",
-        "vulnerabilityFixStrategy": "lowest"
-    },
-    "lockFileMaintenance": {
-        "enabled": true
-    },
-    "pre-commit": {
-        "enabled": true
-    },
-    "packageRules": [
-        {
-            "matchManagers": [
-                "github-actions"
-            ],
-            "matchUpdateTypes": [
-                "minor",
-                "patch",
-                "pin",
-                "digest"
-            ],
-            "automerge": true,
-            "groupName": "Minor / Patch GitHub Actions"
-        }
-    ]
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "local>mw-root/renovate-config"
+  ]
 }
