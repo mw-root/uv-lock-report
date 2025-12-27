@@ -16,6 +16,7 @@ repos:
         name: ty check
         entry: uvx ty check . --python .venv
         language: python
+        types: [file, python]
       - id: docs
         name: Generate Action docs
         entry: auto-doc --filename action.yml
