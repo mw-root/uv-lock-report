@@ -33,7 +33,9 @@
     "vulnerabilityFixStrategy": "lowest"
   },
   "pre-commit": {
-    "enabled": true
+    "enabled": true,
+    "automerge": true,
+    "commitBody": "[skip ci]"
   },
   "packageRules": [
     {
