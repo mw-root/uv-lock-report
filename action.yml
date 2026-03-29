@@ -31,7 +31,7 @@ runs:
       shell: bash
       working-directory: ${{ github.action_path }}
       run: |
-        uv run main.py \
+        uv run uv-lock-report \
           --base-sha "${{ github.event.pull_request.base.sha }}" \
           --base-path "${{ github.workspace }}" \
           --output-path ${{ github.action_path }}/report.json \
