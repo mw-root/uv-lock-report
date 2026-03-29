@@ -4,7 +4,6 @@ uv-lock-report: Parses uv.lock changes and generates Markdown reports.
 
 from uv_lock_report.cli import main as cli_main
 from uv_lock_report.models import (
-    LockFile,
     LockfileChanges,
     LockfilePackage,
     LockFileReporter,
