@@ -16,6 +16,6 @@ jobs:
           fetch-depth: 0
 
       - name: Report
-        uses: mw-root/uv-lock-report@main
+        uses: mw-root/uv-lock-report@cf870db7cb19c89ec4be85438521585850c6f6d0 # main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
