@@ -4,12 +4,7 @@ from enum import IntEnum, StrEnum, auto
 from functools import cached_property
 
 from packaging.version import parse
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    computed_field,
-)
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 
 
 class OutputFormat(StrEnum):
@@ -309,25 +304,7 @@ class LockfileChanges(BaseModel):
         )
 
 
-class LockFileType(StrEnum):
-    UV = auto()
-
-
-class LockFile(BaseModel):
-    type: LockFileType
-    packages: list[LockfilePackage]
-
-    @cached_property
-    def packages_by_name(self) -> dict[str, LockfilePackage]:
-        return {p.name: p for p in self.packages}
-
-    @cached_property
-    def package_names(self) -> set[str]:
-        return set(self.packages_by_name.keys())
-
-
-class UvLockFile(LockFile):
-    type: LockFileType = LockFileType.UV
+class UvLockFile(BaseModel):
     version: int
     revision: int
     packages: list[LockfilePackage] = Field(alias="package")
@@ -336,6 +313,14 @@ class UvLockFile(LockFile):
     @classmethod
     def from_toml_str(cls, toml_str: str) -> "UvLockFile":
         return cls.model_validate(tomllib.loads(toml_str))
+
+    @cached_property
+    def packages_by_name(self) -> dict[str, LockfilePackage]:
+        return {p.name: p for p in self.packages}
+
+    @cached_property
+    def package_names(self) -> set[str]:
+        return set(self.packages_by_name.keys())
 
 
 class LockFileReporter:
