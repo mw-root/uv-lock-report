@@ -27,7 +27,6 @@ def parse_args() -> Namespace:
 
 def main():
     args = parse_args()
-    print(args)
     base_sha = args.base_sha
     base_path = args.base_path
     output_path = args.output_path

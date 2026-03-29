@@ -52,6 +52,15 @@ BASEVERSION = re.compile(
 )
 
 
+class LockfilePackageMetadata(BaseModel):
+    requires_dist: list["LockfilePackage"] | None = Field(
+        alias="requires-dist", default=None
+    )
+    requires_dev: dict[str, list["LockfilePackage"]] | None = Field(
+        alias="requires-dev", default=None
+    )
+
+
 class LockfilePackage(BaseModel):
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -62,6 +71,8 @@ class LockfilePackage(BaseModel):
 
     name: str = Field(alias="Package")
     version: str | None = Field(alias="Version", default=None)
+
+    metadata: LockfilePackageMetadata | None = Field(default=None, exclude=True)
 
     def __str__(self) -> str:
         return f"{self.name}: {self.version}"
