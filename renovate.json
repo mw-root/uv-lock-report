@@ -34,8 +34,7 @@
   },
   "pre-commit": {
     "enabled": true,
-    "automerge": true,
-    "commitBody": "[skip ci]"
+    "automerge": true
   },
   "packageRules": [
     {
