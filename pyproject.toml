@@ -9,22 +9,20 @@ dynamic = ["version", "urls"]
 [project.scripts]
 uv-lock-report = "uv_lock_report.cli:main"
 
-
 [tool.ruff]
 
 [tool.ty.src]
 exclude = [
-    # Ty doesn't seem to understand populating pydantic models by name.
-    "uv_lock_report/tests/test_lock_file_reporter.py",
-    "uv_lock_report/tests/test_updated_package.py",
-    "uv_lock_report/tests/test_lockfile.py",
-    "uv_lock_report/tests/conftest.py",
+  # Ty doesn't seem to understand populating pydantic models by name.
+  "uv_lock_report/tests/test_lock_file_reporter.py",
+  "uv_lock_report/tests/test_updated_package.py",
+  "uv_lock_report/tests/test_lockfile.py",
+  "uv_lock_report/tests/conftest.py",
 ]
 
 [dependency-groups]
 dev = [{ include-group = "test" }]
 test = ["pytest>=8.4.2", "pytest-cov>=7.0.0"]
-
 
 [build-system]
 requires = ["hatchling", "hatch-vcs"]
