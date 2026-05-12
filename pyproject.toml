@@ -9,6 +9,9 @@ dynamic = ["version", "urls"]
 [project.scripts]
 uv-lock-report = "uv_lock_report.cli:main"
 
+[tool.uv]
+exclude-newer = "1 week"
+
 [tool.ruff]
 
 [tool.ty.src]
