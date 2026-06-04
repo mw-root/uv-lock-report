@@ -50,6 +50,15 @@
         "pinDigest"
       ],
       "enabled": true
-    }
+    },
+    {
+        "matchManagers": [
+            "github-actions"
+        ],
+        "matchPackageNames": [
+            "mw-root/uv-lock-report"
+        ],
+        "enabled": false
+        }
   ]
 }
