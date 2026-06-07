@@ -7,6 +7,7 @@
     ":configMigration",
     ":pinDevDependencies"
   ],
+  "minimumReleaseAge": "7 days"
   "lockFileMaintenance": {
     "enabled": true,
     "recreateWhen": "always",
@@ -37,12 +38,6 @@
     "automerge": true
   },
   "packageRules": [
-    {
-      "minimumReleaseAge": "7 days",
-      "matchManagers": [
-        "github-actions"
-      ]
-    },
     {
       "description": "Group all GitHub Actions updates into a single PR",
       "groupName": "Minor and patch GitHub Actions updates",
