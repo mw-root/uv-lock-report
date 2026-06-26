@@ -99,9 +99,9 @@ class UpdatedPackage(BaseModel):
         populate_by_name=True,
     )
 
-    name: str = Field(alias="Package")
-    old_version: str = Field(alias="Old Version")
-    new_version: str = Field(alias="New Version")
+    name: str = Field(serialization_alias="Package")
+    old_version: str = Field(serialization_alias="Old Version")
+    new_version: str = Field(serialization_alias="New Version")
 
     def __str__(self) -> str:
         return f"{self.name}: {self.old_version} -> {self.new_version}"
@@ -447,10 +447,10 @@ class LockFileReporter:
                     )
                     continue
                 updated_packages.append(
-                    UpdatedPackage(  # type: ignore
-                        name=pkg_name,  # type: ignore
-                        old_version=old_pkg.version,  # type: ignore
-                        new_version=new_pkg.version,  # type: ignore
-                    )  # type: ignore
+                    UpdatedPackage(
+                        name=pkg_name,
+                        old_version=old_pkg.version,
+                        new_version=new_pkg.version,
+                    )
                 )
         return self.sort_packages_by_change_level(updated_packages)
