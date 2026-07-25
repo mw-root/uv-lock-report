@@ -42,7 +42,7 @@ def get_old_uv_lock_file(base_sha: str, base_path: str) -> UvLockFile | None:
 
 
 def write_changes_file(lockfile_changes: LockfileChanges, output_path: str) -> None:
-    Path(output_path).write_text(lockfile_changes.model_dump_json(by_alias=True))
+    Path(output_path).write_text(lockfile_changes.model_dump_json(by_alias=False))
 
 
 def report(
