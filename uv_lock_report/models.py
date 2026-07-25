@@ -96,7 +96,6 @@ class UpdatedPackage(BaseModel):
         arbitrary_types_allowed=True,
         validate_by_name=True,
         validate_by_alias=False,
-        populate_by_name=True,
     )
 
     name: str = Field(alias="Package")
@@ -447,10 +446,10 @@ class LockFileReporter:
                     )
                     continue
                 updated_packages.append(
-                    UpdatedPackage(  # type: ignore
-                        name=pkg_name,  # type: ignore
-                        old_version=old_pkg.version,  # type: ignore
-                        new_version=new_pkg.version,  # type: ignore
-                    )  # type: ignore
+                    UpdatedPackage(
+                        name=pkg_name,
+                        old_version=old_pkg.version,
+                        new_version=new_pkg.version,
+                    )
                 )
         return self.sort_packages_by_change_level(updated_packages)
