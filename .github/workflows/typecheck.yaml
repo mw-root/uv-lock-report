@@ -14,8 +14,5 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
 
-      - name: Install dependencies with uv
-        run: uv sync --group test
-
       - name: TypeCheck
-        run: uvx ty check
+        run: uv run --with ty ty check --output-format github
