@@ -25,5 +25,6 @@ jobs:
         run: uv run --isolated --no-project --with dist/*.whl test_cli_install.py
       - name: Smoke test (source distribution)
         run: uv run --isolated --no-project --with dist/*.tar.gz test_cli_install.py
+      - uses: astral-sh/attest-action@39b6ce43875c196a579e31635b11aa2a2036384a # v0.0.7
       - name: Publish
         run: uv publish
