@@ -1,43 +1,53 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = [ "hatch-vcs", "hatchling" ]
+
 [project]
 name = "uv-lock-report"
 description = "Parse and report package changes in uv.lock."
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["packaging>=25.0", "pydantic>=2.11.9"]
-dynamic = ["version", "urls"]
+classifiers = [
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+]
+dynamic = [ "urls", "version" ]
+dependencies = [ "packaging>=25", "pydantic>=2.11.9" ]
+scripts.uv-lock-report = "uv_lock_report.cli:main"
 
-[project.scripts]
-uv-lock-report = "uv_lock_report.cli:main"
+[dependency-groups]
+dev = [ { include-group = "test" }, { include-group = "docs" } ]
+test = [ "pytest>=8.4.2", "pytest-cov>=7" ]
+docs = [
+  "griffe-pydantic>=1.3.2",
+  "mike>=2.2.0",
+  "mkdocs-gen-files>=0.6.1",
+  "mkdocs-literate-nav>=0.6.3",
+  "mkdocs-materialx>=10.2.2",
+  "mkdocstrings[python]>=1.0.8",
+  "properdocs>=1.6.7",
+  "pymdown-extensions>=13.0",
+]
+
+[tool.hatch]
+version.source = "vcs"
+version.fallback-version = "0.0.1"
+metadata.hooks.vcs.urls.Homepage = "https://github.com/mw-root/uv-lock-report"
+metadata.hooks.vcs.urls.Source = "https://github.com/mw-root/uv-lock-report"
+build.hooks.vcs.version-file = "./uv_lock_report/_version.py"
 
 [tool.uv]
 exclude-newer = "1 week"
 
 [tool.ruff]
 
-[tool.ty.src]
-exclude = [
+[tool.ty]
+src.exclude = [
   # Ty doesn't seem to understand populating pydantic models by name.
   "uv_lock_report/tests/test_lock_file_reporter.py",
   "uv_lock_report/tests/test_updated_package.py",
   "uv_lock_report/tests/test_lockfile.py",
   "uv_lock_report/tests/conftest.py",
 ]
-
-[dependency-groups]
-dev = [{ include-group = "test" }]
-test = ["pytest>=8.4.2", "pytest-cov>=7.0.0"]
-
-[build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
-
-[tool.hatch.version]
-source = "vcs"
-fallback-version = "0.0.1"
-
-[tool.hatch.metadata.hooks.vcs.urls]
-Homepage = "https://github.com/mw-root/uv-lock-report"
-Source = "https://github.com/mw-root/uv-lock-report"
-
-[tool.hatch.build.hooks.vcs]
-version-file = "./uv_lock_report/_version.py"
